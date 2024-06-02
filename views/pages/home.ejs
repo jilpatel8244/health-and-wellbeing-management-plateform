@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="./css/tailwind.css">
+</head>
+<body class="font-sans bg-gray-100">
+    <header class="bg-white shadow-md py-4 px-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-700">Dashboard</h1>
+        <div class="flex items-center space-x-4">
+            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</a>
+            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-gray-200">Logout</a>
+        </div>
+    </header>
+  
+    <main class="container mx-auto px-4 py-8 flex min-h-screen">
+        <aside class="w-64 bg-white shadow-md rounded-lg p-4 flex flex-col">
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500 active" id="home-link">Home</span>
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="add-medication-link">Add Medication</span>
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="report-generation-link">Report Generation</span>
+        </aside>
+    
+        <div id="main-content" class="flex-grow px-4 bg-white shadow-md rounded-lg p-4 overflow-auto">
+            <div id="content-container"></div>  
+        </div>
+    </main>
+</body>
+</html>
+
+<script>
+    const contentContainer = document.getElementById('content-container');
+
+    document.getElementById('home-link').addEventListener('click', async () => {
+        // make fetch request
+        updateContent('home');
+    });
+
+    document.getElementById('add-medication-link').addEventListener('click', async () => {
+        updateContent(`<div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-6">Medication Reminder Form</h1>
+    <form id="medicationForm" onSubmit="submitHandler(event)">
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="medicationName">Medication Name</label>
+            <input type="text" name="medicationName" id="medicationName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
+            <textarea id="description" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="type">Reminder Type</label>
+            <select id="type" name="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="toggleFields()">
+                <option value="">Select Type</option>
+                <option value="oneTime">One Time</option>
+                <option value="recurring">Recurring</option>
+            </select>
+        </div>
+        <div id="oneTimeFields" class="hidden">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeDate">Date</label>
+                <input type="date" name="oneTimeDate" id="oneTimeDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeTime">Time</label>
+                <input type="time" name="oneTimeTime" id="oneTimeTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+        </div>
+        <div id="recurringFields" class="hidden">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="recurringType">Recurring Type</label>
+                <select id="recurringType" name="recurringType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="toggleRecurringFields()">
+                    <option value="">Select Recurring Type</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+            </div>
+            <div id="dailyFields" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyStartDate">Start Date</label>
+                    <input type="date" name="dailyStartDate" id="dailyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyEndDate">End Date</label>
+                    <input type="date" name="dailyEndDate" id="dailyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyTime">Time</label>
+                    <input type="time" name="dailyTime" id="dailyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+            </div>
+            <div id="weeklyFields" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyStartDate">Start Date</label>
+                    <input type="date" name="weeklyStartDate" id="weeklyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyEndDate">End Date</label>
+                    <input type="date" name="weeklyEndDate" id="weeklyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyTime">Time</label>
+                    <input type="time" name="weeklyTime" id="weeklyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dayOfWeek">Day of the Week</label>
+                    <select id="dayOfWeek" name="dayOfWeek" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">select day of the week</option>
+                        <option value="sunday">Sunday</option>
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                        <option value="saturday">Saturday</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
+        </div>
+    </form>
+</div>`)
+    });
+
+    document.getElementById('report-generation-link').addEventListener('click', async () => {
+        // make fetch request
+    });
+
+    function updateContent(content) {
+        let data = formatContent(content);
+        contentContainer.innerHTML = data; // Update content container
+    }
+
+    function formatContent(data) {
+        // Replace with your logic to format data into HTML content
+        return `<div>${data}</div>`;
+    }
+</script>
+
+<script>
+    function toggleFields() {
+        const type = document.getElementById('type').value;
+        const oneTimeFields = document.getElementById('oneTimeFields');
+        const recurringFields = document.getElementById('recurringFields');
+
+        oneTimeFields.classList.add('hidden');
+        recurringFields.classList.add('hidden');
+
+        if (type === 'oneTime') {
+            oneTimeFields.classList.remove('hidden');
+        } else if (type === 'recurring') {
+            recurringFields.classList.remove('hidden');
+        }
+    }
+
+    function toggleRecurringFields() {
+        const recurringType = document.getElementById('recurringType').value;
+        const dailyFields = document.getElementById('dailyFields');
+        const weeklyFields = document.getElementById('weeklyFields');
+
+        dailyFields.classList.add('hidden');
+        weeklyFields.classList.add('hidden');
+
+        if (recurringType === 'daily') {
+            dailyFields.classList.remove('hidden');
+        } else if (recurringType === 'weekly') {
+            weeklyFields.classList.remove('hidden');
+        }
+    }
+</script>
+
+<script src="/js/home.script.js"></script>

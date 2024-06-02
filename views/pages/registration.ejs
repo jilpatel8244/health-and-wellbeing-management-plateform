@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness management system</title>
+    <link rel="stylesheet" href="./css/tailwind.css">
+</head>
+<body class="font-sans bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto shadow-lg rounded-lg overflow-hidden bg-white">
+            <div class="text-center p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold">Register</h1>
+            </div>
+            <form class="px-8 py-4" name="registrationForm" id="registrationForm">
+                <div class="mb-4">
+                    <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <input type="text" id="firstName" name="firstName" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="number" id="phoneNumber" name="phoneNumber" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+                    <input type="number" id="age" name="age" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" name="dateOfBirth" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Create Password</label>
+                    <input type="password" id="password" name="password" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="mb-4">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="px-4 py-2 rounded-md bg-indigo-500 text-white font-bold shadow sm:w-full">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </body>
+</html>
+
+<script src="/js/registration.script.js"></script>
