@@ -3,6 +3,7 @@ const router = require('./routes/index.route');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 const { checkAndSendReminders } = require('./jobs/reminderJob');
+require('./jobs/worker');
 const app = express();
 require('dotenv').config();
 require('./config/passport');

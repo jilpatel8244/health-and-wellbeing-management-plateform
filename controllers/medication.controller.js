@@ -1,5 +1,5 @@
 const db = require('../models/index');
-let { Medication, Reminder } = db;
+let { Medication, Reminder, User } = db;
 
 exports.insertMedication = async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -67,6 +67,32 @@ exports.insertMedication = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "something went wrong while inserting madicine"
+        })
+    }
+}
+
+exports.getUserMedications = async (req, res) => {
+    try {
+        let allUserMedication = await Medication.findAll(
+            {
+                attributes: [ 'id', 'name', 'description', 'picture_url', 'user_id' ],
+                where: {
+                    user_id: req.user[0].id
+                }
+            }
+        );
+
+        console.log(allUserMedication);
+
+        res.status(200).json({
+            success: true,
+            message: allUserMedication
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while fetching all user madications"
         })
     }
 }
