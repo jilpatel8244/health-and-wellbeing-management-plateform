@@ -64,7 +64,7 @@ async function processReportJob(job) {
     let { user } = job.data;
     const { csvFilePath, csvFileName } = await generateReportForUser(user);
     console.log("file name: ", csvFileName, " file path: ", csvFilePath);
-    await mailService(user.email, 'Your Weekly Report', 'Report from thisDate to thisDate', csvFilePath, csvFileName);
+    await mailService(user.email, 'Your Weekly Report', 'Report from thisDate to thisDate', null, csvFilePath, csvFileName);
     fs.unlinkSync(csvFilePath);
 }
 

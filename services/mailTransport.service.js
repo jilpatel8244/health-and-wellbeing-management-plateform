@@ -1,27 +1,32 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-function mailService(to, subject, text, csvFilePath, csvFileName) {
+function mailService(to, subject, text, html, csvFilePath, csvFileName) {
 
     return new Promise((resolve, reject) => {
         let mailTransporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "pateljil8244@gmail.com",
-                pass: "vgyl rjof dazn sfdh"
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
+
+        let attachmentsDetails = [];
+        if (csvFilePath && csvFileName) {
+            attachmentsDetails.push({
+                filename: csvFileName,
+                path: csvFilePath
+            })
+        }
     
         let mailDetails = {
-            from: "pateljil8244@gmail.com",
+            from: process.env.EMAIL_USER,
             to: to,
             subject: subject,
             text: text,
-            attachments: [
-                {
-                    filename: csvFileName,
-                    path: csvFilePath
-                }
-            ]
+            html: html,
+            attachments: attachmentsDetails
         }
     
         mailTransporter.sendMail(mailDetails, (err, data) => {

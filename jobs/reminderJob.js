@@ -45,18 +45,33 @@ const checkAndSendReminders = async () => {
         const startDateStr = getLocalDate(start_date);
         const endDateStr = getLocalDate(end_date);
 
+        let htmlContent = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Home</title>
+            <link rel="stylesheet" href="./css/tailwind.css">
+        </head>
+        <body>
+            <h1>Medicine Name : ${name}</h1>
+            <p>Medicine Description : ${description}</p>
+        </body>
+        </html>
+        `
+
         if (type === 'oneTime' && oneTimeDateStr === currentDate && isSameTime) {
             console.log("here in one time sending email"); 
-            mailService(user.email, name, description);
+            mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
         } else if (type === 'daily') {
             if (currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
                 console.log("here in daily sending email"); 
-                mailService(user.email, name, description);
+                mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
             }
         } else if (type === 'weekly') {
             if (currentDay === day_of_week && currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
                 console.log("here in weekly sending email"); 
-                mailService(user.email, name, description);
+                mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
             }
         }
     });
