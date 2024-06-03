@@ -46,18 +46,15 @@ const checkAndSendReminders = async () => {
         const endDateStr = getLocalDate(end_date);
 
         if (type === 'oneTime' && oneTimeDateStr === currentDate && isSameTime) {
-            // sendReminderEmail(user.email, name, description);
             console.log("here in one time sending email"); 
             mailService(user.email, name, description);
         } else if (type === 'daily') {
             if (currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
-                // sendReminderEmail(user.email, name, description);
                 console.log("here in daily sending email"); 
                 mailService(user.email, name, description);
             }
         } else if (type === 'weekly') {
             if (currentDay === day_of_week && currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
-                // sendReminderEmail(user.email, name, description);
                 console.log("here in weekly sending email"); 
                 mailService(user.email, name, description);
             }
