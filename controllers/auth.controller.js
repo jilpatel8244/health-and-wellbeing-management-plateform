@@ -4,7 +4,8 @@ const generateRandomString = require('../services/saltGeneration.service');
 const generateOTP = require('../services/otpGeneration.service');
 const mailService = require('../services/mailTransport.service');
 const jwt = require('jsonwebtoken');
-let { User } = db;
+const { Op } = require('sequelize');
+let { User, UserSession } = db;
 
 exports.createUser = async (req, res) => {
     try {
@@ -210,7 +211,18 @@ exports.loginHandler = async (req, res) => {
             })
         }
 
+        let ip = req.ip || req.socket.localAddress || req.connection.remoteAddress;
+
         // if matches then do something for session and jwt token
+        let newUserSession = await UserSession.create(
+            {
+                user_id: userExist[0].id,
+                device: ip,
+            }
+        );
+
+        console.log(newUserSession);
+
         let payLoad = {
             id: userExist[0].id,
             email: userExist[0].email
@@ -223,6 +235,7 @@ exports.loginHandler = async (req, res) => {
             message: "user logged in successfully"
         })
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             success: false,
             message: "something went wrong while login"
@@ -251,5 +264,85 @@ function calculateTimeDifference(createdAt) {
       return true;
     } else {
       return false;
+    }
+}
+
+exports.logoutHandler = async (req, res) => {
+    try {
+        let ip = req.ip || req.socket.localAddress || req.connection.remoteAddress;
+
+        await UserSession.update(
+            {
+                logout_at: new Date()
+            },
+            {
+                where: {
+                    user_id: req.user[0].id,
+                    logout_at: null,
+                    device: ip
+                }
+            }
+        );
+
+        res.clearCookie('token');
+        res.redirect('/login');
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while loggin out"
+        })
+    }
+}
+
+exports.logoutFromAllDevicesHandler = async (req, res) => {
+    try {
+        await UserSession.update(
+            {
+                logout_at: new Date()
+            },
+            {
+                where: {
+                    user_id: req.user[0].id,
+                    logout_at: null
+                }
+            }
+        );
+
+        res.clearCookie('token');
+        res.redirect('/login');        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while loggin out"
+        })
+    }
+}
+
+exports.logoutFromOtherDevicesHandler = async (req, res) => {
+    try {
+        let ip = req.ip || req.socket.localAddress || req.connection.remoteAddress;
+
+        await UserSession.update(
+            {
+                logout_at: new Date()
+            },
+            {
+                where: {
+                    user_id: req.user[0].id,
+                    logout_at: null,
+                    device :{
+                        [Op.ne]: ip
+                    }
+                }
+            }
+        );
+
+        res.render('pages/home');
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while loggin out"
+        })
     }
 }

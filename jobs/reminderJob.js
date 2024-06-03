@@ -30,7 +30,7 @@ const checkAndSendReminders = async () => {
     };
 
     reminders.forEach((reminder) => {
-        const { type, one_time_date, start_date, end_date, time, day_of_week, Medication: medication } = reminder;
+        const { id, type, one_time_date, start_date, end_date, time, day_of_week, Medication: medication } = reminder;
         const { name, description, User: user } = medication;
 
         const [reminderHours, reminderMinutes, reminderSeconds] = time.split(':').map(Number);
@@ -56,6 +56,10 @@ const checkAndSendReminders = async () => {
         <body>
             <h1>Medicine Name : ${name}</h1>
             <p>Medicine Description : ${description}</p>
+            <form action="http://localhost:3000/reminders/update-checkedAt" method="post">
+                <input type="hidden" name="id" value=${id} />
+                <input type="submit" value="if taken then click it" />
+            </form>
         </body>
         </html>
         `

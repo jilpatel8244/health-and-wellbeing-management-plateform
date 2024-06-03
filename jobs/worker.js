@@ -79,7 +79,7 @@ async function getUsers() {
     return users;
 }
 
-const schedule = cron.schedule('49 13 * * 1', async () => {
+const schedule = cron.schedule('35 15 * * 1', async () => {
     const users = await getUsers();
     users.forEach(user => {
         reportQueue.add('generate-report', { user });

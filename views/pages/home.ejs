@@ -1,34 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="./css/tailwind.css">
 </head>
+
 <body class="font-sans bg-gray-100" onload="getAllMedicationInfo()">
     <header class="bg-white shadow-md py-4 px-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-700">Dashboard</h1>
         <div class="flex items-center space-x-4">
-            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</a>
-            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-gray-200">Logout</a>
+            <a href="#"
+                class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</a>
+
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleDropdown()" class="inline-flex justify-center w-full px-4 py-2 bg-gray-800 text-sm font-medium text-white">
+                        Logout Options
+                        <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div class="py-1">
+                            <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            <a href="/logout-all-devices" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout from all devices</a>
+                            <a href="/logout-other-devices" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout from other devices</a>
+                        </div>
+                    </div>
+                </div>
         </div>
     </header>
-  
+
     <main class="container mx-auto px-4 py-8 flex h-screen">
         <aside class="w-64 bg-white shadow-md rounded-lg p-4 flex flex-col overflow-y-auto">
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500 active" id="home-link">Home</span>
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="add-medication-link">Add Medication</span>
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="report-generation-link">Report Generation</span>
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500 active"
+                id="home-link">Home</span>
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="add-medication-link">Add
+                Medication</span>
+            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500"
+                id="report-generation-link">Report Generation</span>
         </aside>
-    
+
         <div id="main-content" class="flex-grow px-4 bg-white shadow-md rounded-lg p-4 overflow-auto">
             <div id="content-container">
-                
-            </div>  
+
+            </div>
         </div>
     </main>
 </body>
+
 </html>
 
 <script src="/js/home.script.js"></script>
+
+<script>
+    function toggleDropdown() {
+        document.getElementById("dropdown").classList.toggle("hidden");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.inline-flex')) {
+            var dropdowns = document.getElementsByClassName("absolute");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (!openDropdown.classList.contains('hidden')) {
+                    openDropdown.classList.add('hidden');
+                }
+            }
+        }
+    }
+</script>
+

@@ -15,6 +15,7 @@ app.use('/', router);
 
 checkAndSendReminders();
 
+app.set('trust proxy', true);
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
