@@ -2,7 +2,7 @@ const express = require('express');
 const router = require('./routes/index.route');
 const path = require('path');
 const cookieParser = require("cookie-parser");
-const { checkAndSendReminders } = require('./jobs/reminderJob');
+require('./jobs/reminderJob');
 require('./jobs/worker');
 const app = express();
 require('dotenv').config();
@@ -12,8 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use('/', router);
-
-checkAndSendReminders();
 
 app.set('trust proxy', true);
 app.set('view engine', 'ejs');

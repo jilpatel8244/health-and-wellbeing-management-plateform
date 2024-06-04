@@ -26,6 +26,19 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
         if (response.success) {
             let url = window.origin + '/home';
             window.location.href = url;
+        } else {
+            if (response.toast) {
+                let result = await Swal.fire({
+                    text: response.message,
+                    showCancelButton: true,
+                    confirmButtonText: "Activate",
+                });
+
+                if (result.value) {
+                    let url = window.origin + `/verify-email`
+                    window.location.href = url;
+                }
+            }
         }
     } catch (error) {
         console.log(error);

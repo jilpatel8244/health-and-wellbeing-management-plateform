@@ -40,8 +40,8 @@ document.getElementById('registrationForm').addEventListener("submit", async (ev
 
     let email = document.getElementById('email').value;
 
-    for (var [key, value] of formData.entries()) { 
-        console.log(key , " ", value);
+    for (var [key, value] of formData.entries()) {
+        console.log(key, " ", value);
     }
 
     try {
@@ -51,10 +51,23 @@ document.getElementById('registrationForm').addEventListener("submit", async (ev
         });
         const response = await data.json();
         console.log(response);
-        
+
         if (response.success) {
             let url = window.origin + `/verify-otp?email=${email}`
             window.location.href = url;
+        } else {
+            if (response.toast) {
+                let result = await Swal.fire({
+                    text: response.message,
+                    showCancelButton: true,
+                    confirmButtonText: "Activate",
+                });
+
+                if (result.value) {
+                    let url = window.origin + `/verify-email`
+                    window.location.href = url;
+                }
+            }
         }
     } catch (error) {
         console.log(error);

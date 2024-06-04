@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email</title>
+    <link rel="stylesheet" href="./css/tailwind.css">
+</head>
+
+<body class="font-sans bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto shadow-lg rounded-lg overflow-hidden bg-white">
+            <div class="text-center p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold">Verify Email</h1>
+            </div>
+            <form class="px-8 py-4" name="verifyForm" id="verifyForm">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email"
+                        class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit"
+                        class="px-4 py-2 rounded-md bg-indigo-500 text-white font-bold shadow sm:w-full">Sign
+                        In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    document.getElementById("verifyForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        let email = document.getElementById('email').value;
+
+        console.log(email);
+
+        try {
+            const data = await fetch('/verify-email', {
+                method: 'POST',
+                body: JSON.stringify({ email: email }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const response = await data.json();
+            console.log(response);
+
+            if (response.success) {
+                let url = window.origin + `/verify-otp?email=${email}`
+                window.location.href = url;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+</script>

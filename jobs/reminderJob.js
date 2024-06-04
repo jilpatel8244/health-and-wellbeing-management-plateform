@@ -130,4 +130,4 @@ cron.schedule('* * * * *', () => {
     checkAndSendReminders();
 });
 
-module.exports = { checkAndSendReminders };
+// module.exports = { checkAndSendReminders };
