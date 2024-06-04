@@ -9,9 +9,9 @@ let { User, UserSession } = db;
 
 exports.createUser = async (req, res) => {
     try {
-        console.log(req.body);
 
         let { firstName, lastName, dateOfBirth, email, password, confirmPassword, phoneNumber, gender } = req.body;
+        let path = (req.file) ? (req.file.path) : ('/assets/userImg.png');
 
         // check user already exist or not
             // 3 cases : 
@@ -79,6 +79,7 @@ exports.createUser = async (req, res) => {
             dob: dateOfBirth,
             password: hashedPassword,
             salt: salt,
+            profile_img_url: path,
             phone_number: phoneNumber,
             otp: otp,
             is_active: false,
@@ -97,6 +98,7 @@ exports.createUser = async (req, res) => {
             message: "user created successfully"
         });
     } catch (error) {
+        console.log(error);
         return res.status(200).json({
             success: false,
             message: "something went wrong"

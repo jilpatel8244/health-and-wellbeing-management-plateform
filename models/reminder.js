@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Reminder.belongsTo(models.Medication);
+      Reminder.hasMany(models.ReminderLogs, {
+        onDelete: "SET NULL",
+        onUpdate: 'CASCADE'
+      });
     }
   }
   Reminder.init({
@@ -20,8 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     end_date: DataTypes.DATEONLY,
     time: DataTypes.TIME,
     day_of_week: DataTypes.ENUM('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
-    medication_id: DataTypes.INTEGER,
-    taken_at: DataTypes.DATE
+    medication_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Reminder',

@@ -1,22 +1,25 @@
 const db = require('../models/index');
-let { Medication, Reminder, User } = db;
+let { ReminderLogs } = db;
 
-exports.updateCheckedAt = async (req, res) => {
+exports.updateMarkAsDoneAt = async (req, res) => {
     try {
         let { id } = req.body;
 
         if (!id) {
             return res.status(500).json({
                 success: false,
-                message: "dont try to fool me"
+                message: "sorry, id not found"
             });
         }
 
-        await Reminder.update(
-            { taken_at: db.Sequelize.fn('now') },
+        // if already updated than dont update it (situation ocuure when user clicks again)
+
+        await ReminderLogs.update(
+            { mark_as_done_at: db.Sequelize.fn('now') },
             {
                 where: {
-                    id: id
+                    id: id,
+                    mark_as_done_at: null
                 }
             }
         );

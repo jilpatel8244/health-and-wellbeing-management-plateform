@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const mailService = require('../services/mailTransport.service');
 const db = require('../models/index');
+const { createReminderLog } = require('../repositories/reminderLog.repository');
 let { User, Medication, Reminder } = db;
 
 const checkAndSendReminders = async () => {
@@ -29,7 +30,7 @@ const checkAndSendReminders = async () => {
         return `${year}-${month}-${day}`;
     };
 
-    reminders.forEach((reminder) => {
+    reminders.forEach(async (reminder) => {
         const { id, type, one_time_date, start_date, end_date, time, day_of_week, Medication: medication } = reminder;
         const { name, description, User: user } = medication;
 
@@ -45,7 +46,11 @@ const checkAndSendReminders = async () => {
         const startDateStr = getLocalDate(start_date);
         const endDateStr = getLocalDate(end_date);
 
-        let htmlContent = `<!DOCTYPE html>
+        if (type === 'oneTime' && oneTimeDateStr === currentDate && isSameTime) {
+            console.log("here in one time sending email"); 
+            let logId = await createReminderLog(id);
+
+            let htmlContent = `<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
@@ -56,26 +61,64 @@ const checkAndSendReminders = async () => {
         <body>
             <h1>Medicine Name : ${name}</h1>
             <p>Medicine Description : ${description}</p>
-            <form action="http://localhost:3000/reminders/update-checkedAt" method="post">
-                <input type="hidden" name="id" value=${id} />
+            <form action="http://localhost:3000/reminders/update-marks-as-done" method="post">
+                <input type="hidden" name="id" value=${logId} />
                 <input type="submit" value="if taken then click it" />
             </form>
         </body>
         </html>
         `
-
-        if (type === 'oneTime' && oneTimeDateStr === currentDate && isSameTime) {
-            console.log("here in one time sending email"); 
-            mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
+        
+            await mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
         } else if (type === 'daily') {
             if (currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
                 console.log("here in daily sending email"); 
-                mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
+                let logId = await createReminderLog(id);
+
+                let htmlContent = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Home</title>
+            <link rel="stylesheet" href="./css/tailwind.css">
+        </head>
+        <body>
+            <h1>Medicine Name : ${name}</h1>
+            <p>Medicine Description : ${description}</p>
+            <form action="http://localhost:3000/reminders/update-marks-as-done" method="post">
+                <input type="hidden" name="id" value=${logId} />
+                <input type="submit" value="if taken then click it" />
+            </form>
+        </body>
+        </html>
+        `
+                await mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
             }
         } else if (type === 'weekly') {
             if (currentDay === day_of_week && currentDate >= startDateStr && currentDate <= endDateStr && isSameTime) {
                 console.log("here in weekly sending email"); 
-                mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
+                let logId = await createReminderLog(id);
+
+                let htmlContent = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Home</title>
+            <link rel="stylesheet" href="./css/tailwind.css">
+        </head>
+        <body>
+            <h1>Medicine Name : ${name}</h1>
+            <p>Medicine Description : ${description}</p>
+            <form action="http://localhost:3000/reminders/update-marks-as-done" method="post">
+                <input type="hidden" name="id" value=${logId} />
+                <input type="submit" value="if taken then click it" />
+            </form>
+        </body>
+        </html>
+        `
+                await mailService(user.email, 'Time for medicine', null, htmlContent, null, null);
             }
         }
     });

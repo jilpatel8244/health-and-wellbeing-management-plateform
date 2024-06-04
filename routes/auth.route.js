@@ -2,6 +2,7 @@ const express = require('express');
 const { createUser, verifyOtp, loginHandler, logoutHandler, logoutFromOtherDevicesHandler, logoutFromAllDevicesHandler } = require('../controllers/auth.controller');
 const passport = require('passport');
 const userSessionCheck = require('../middleware/userSessionCheck');
+const upload = require('../middleware/uploadConfig');
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -12,7 +13,7 @@ router.get("/registration", (req, res) => {
     res.render("pages/registration.ejs");
 });
 
-router.post("/registration", createUser);
+router.post("/registration", upload.single('profile_img'), createUser);
 
 router.get("/verify-otp", (req, res) => {
     res.render("pages/otpPage.ejs")

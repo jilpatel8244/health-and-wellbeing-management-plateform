@@ -1,10 +1,10 @@
 const express = require('express');
 const passport = require('passport');
-const { updateCheckedAt } = require('../controllers/reminders.controller');
+const { updateMarkAsDoneAt } = require('../controllers/reminders.controller');
 const userSessionCheck = require('../middleware/userSessionCheck');
 const router = express.Router();
 
-router.post("/update-checkedAt", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), updateCheckedAt);
+router.post("/update-marks-as-done", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), updateMarkAsDoneAt);
 
 
 module.exports = router;
