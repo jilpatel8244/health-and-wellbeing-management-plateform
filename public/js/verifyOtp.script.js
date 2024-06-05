@@ -20,9 +20,11 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async (event
         });
         const response = await data.json();
         console.log(response);
+        let redirectedAt = document.getElementById('redirectedAt').value;
+        console.log(redirectedAt);
 
         if (response.success) {
-            let url = window.origin + '/login'
+            let url = window.origin + '/' + redirectedAt + `?email=${email}`;
             window.location.href = url;
         } else {
             if (response.toast) {
@@ -33,7 +35,8 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async (event
                 });
 
                 if (result.value) {
-                    let url = window.origin + `/verify-email`
+                    console.log("redirected at verify otp script : ", redirectedAt);
+                    let url = window.origin + `/verify-email?redirectedAt=${redirectedAt}`
                     window.location.href = url;
                 }
             }

@@ -53,7 +53,7 @@ document.getElementById('registrationForm').addEventListener("submit", async (ev
         console.log(response);
 
         if (response.success) {
-            let url = window.origin + `/verify-otp?email=${email}`
+            let url = window.origin + `/verify-otp?email=${email}&redirectedAt=login`
             window.location.href = url;
         } else {
             if (response.toast) {
@@ -64,7 +64,7 @@ document.getElementById('registrationForm').addEventListener("submit", async (ev
                 });
 
                 if (result.value) {
-                    let url = window.origin + `/verify-email`
+                    let url = window.origin + `/verify-email?redirectedAt=login`
                     window.location.href = url;
                 }
             }

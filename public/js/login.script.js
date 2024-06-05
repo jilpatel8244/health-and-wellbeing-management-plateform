@@ -35,7 +35,7 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
                 });
 
                 if (result.value) {
-                    let url = window.origin + `/verify-email`
+                    let url = window.origin + `/verify-email?redirectedAt=login`
                     window.location.href = url;
                 }
             }

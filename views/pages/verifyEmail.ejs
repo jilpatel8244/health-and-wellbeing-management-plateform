@@ -20,6 +20,9 @@
                     <input type="email" id="email" name="email"
                         class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                 </div>
+                <div>
+                    <input type="hidden" name="redirectedAt" value='<%= redirectedAt %>' id="redirectedAt" />
+                </div>
                 <div class="flex items-center justify-between">
                     <button type="submit"
                         class="px-4 py-2 rounded-md bg-indigo-500 text-white font-bold shadow sm:w-full">Sign
@@ -51,8 +54,9 @@
             const response = await data.json();
             console.log(response);
 
+            let redirectedAt = document.getElementById('redirectedAt').value;
             if (response.success) {
-                let url = window.origin + `/verify-otp?email=${email}`
+                let url = window.origin + `/verify-otp?email=${email}&redirectedAt=${redirectedAt}`
                 window.location.href = url;
             }
         } catch (error) {

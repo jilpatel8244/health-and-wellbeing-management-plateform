@@ -26,6 +26,9 @@
                   <input type="text" id="otp_6" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                 </div>
               </div>
+              <div>
+                <input type="hidden" name="redirectedAt" value='<%= redirectedAt %>' id="redirectedAt" />
+              </div>
               <div class="flex items-center justify-between">
                 <button type="submit" class="px-4 py-2 rounded-md bg-indigo-500 text-white font-bold shadow sm:w-full">Verify</button>
               </div>

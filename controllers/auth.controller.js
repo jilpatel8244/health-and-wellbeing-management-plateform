@@ -399,6 +399,8 @@ exports.changePasswordHandler = async (req, res) => {
 
         let { email, password, confirmPassword } = req.body;
 
+        console.log(req.body);
+
         // check user exist or not
         let userExist = await User.findAll({
             where: {
@@ -471,7 +473,10 @@ exports.renderLandingPage = async (req, res) => {
 }
 
 exports.renderOtpPage = async (req, res) => {
-    res.render("pages/otpPage.ejs");
+    let redirectedAt = req.query.redirectedAt;
+    res.render("pages/otpPage.ejs", {
+        redirectedAt: redirectedAt
+    });
 }
 
 exports.renderHomePage = async (req, res) => {
@@ -479,9 +484,15 @@ exports.renderHomePage = async (req, res) => {
 }
 
 exports.renderVerifyEmailPage = async (req, res) => {
-    res.render("pages/verifyEmail.ejs");
+    let redirectedAt = req.query.redirectedAt;
+    res.render("pages/verifyEmail.ejs", {
+        redirectedAt: redirectedAt
+    });
 }
 
 exports.renderCreateConfirmPasswordPage = async (req, res) => {
-    res.render("pages/createConfirmPassword.ejs");
+    let email = req.query.email;
+    res.render("pages/createConfirmPassword.ejs", {
+        email: email
+    });
 }
