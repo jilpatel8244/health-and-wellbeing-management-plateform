@@ -8,11 +8,36 @@ socket.on('logout-from-all-devices', (data) => {
     }
 });
 
+socket.on('logout-from-other-devices', (data) => {
+    console.log(data);
+    if (userId === data.userId && socket.id != data.socketId) {
+        location.reload();
+    }
+});
+
 socket.on('connect', () => {
     console.log('connected to server ' + socket.id);
 
-    socket.emit('add-user-to-room', userId);   
+    socket.emit('add-user-to-room', userId);
 });
+
+async function logoutFromOtherDevicesHandler() {
+    try {
+        const data = await fetch('/logout-other-devices', {
+            method: 'POST',
+            body: JSON.stringify({socketId : socket.id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const response = await data.json();
+        console.log(response);
+
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const contentContainer = document.getElementById('content-container');
 function updateContent(content) {

@@ -26,7 +26,7 @@ router.get("/home", userSessionCheck, passport.authenticate('jwt', {session: fal
 
 router.get("/logout", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), logoutHandler);
 router.get("/logout-all-devices", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), logoutFromAllDevicesHandler);
-router.get("/logout-other-devices", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), logoutFromOtherDevicesHandler);
+router.post("/logout-other-devices", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), logoutFromOtherDevicesHandler);
 
 
 module.exports = router;

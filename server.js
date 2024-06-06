@@ -10,12 +10,15 @@ const router = require('./routes/index.route');
 const path = require('path');
 const socketHandler = require('./helpers/socket');
 const cookieParser = require("cookie-parser");
-require('./jobs/reminderJob');
-require('./jobs/worker');
+require('./jobs/producers/reportProducer');
+require('./jobs/workers/reportWorker');
+require('./jobs/workers/reminderWorker');
+require('./jobs/producers/reminderProducer');
 require('dotenv').config();
 require('./config/passport');
 
 socketHandler(io);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -24,7 +27,6 @@ app.use('/', router);
 
 app.set('trust proxy', true);
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 

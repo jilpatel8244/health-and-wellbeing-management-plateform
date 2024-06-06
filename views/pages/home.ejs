@@ -21,8 +21,7 @@
             <div
                 class="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">
                 <img src="<%= user.profile_img_url %>" height="50px" width="50px" alt="profile image">
-                <%= user.first_name %>
-                    <%= user.last_name %>
+                <p class="px-1"><%= user.first_name %> <%= user.last_name %></p>
             </div>
             <!-- <span onclick="trial()"
                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</span> -->
@@ -42,9 +41,8 @@
                         <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
                         <a href="/logout-all-devices"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout from all devices</a>
-                        <a href="/logout-other-devices"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout from other
-                            devices</a>
+                        <span onclick="logoutFromOtherDevicesHandler()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout from other
+                            devices</span>
                     </div>
                 </div>
             </div>

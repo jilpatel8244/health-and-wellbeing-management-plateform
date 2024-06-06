@@ -315,6 +315,8 @@ exports.logoutFromAllDevicesHandler = async (req, res) => {
         const io = req.app.get('io');
         
         io.to(`room_${req.user[0].id}`).emit('logout-from-all-devices', req.user[0].id);
+
+        res.redirect('login');
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -326,6 +328,8 @@ exports.logoutFromAllDevicesHandler = async (req, res) => {
 exports.logoutFromOtherDevicesHandler = async (req, res) => {
     try {
         let ip = req.ip || req.socket.localAddress || req.connection.remoteAddress;
+        let { socketId } = req.body;
+        console.log(socketId);
 
         await UserSession.update(
             {
@@ -344,8 +348,12 @@ exports.logoutFromOtherDevicesHandler = async (req, res) => {
 
         const io = req.app.get('io');
         
-        io.to(`room_${req.user[0].id}`).emit('logout-from-all-devices', req.user[0].id);
-
+        io.to(`room_${req.user[0].id}`).emit('logout-from-other-devices', {userId: req.user[0].id, socketId: socketId});
+        
+        res.status(200).json({
+            success: true,
+            message: "others are logout successfully"
+        })
     } catch (error) {
         return res.status(500).json({
             success: false,
