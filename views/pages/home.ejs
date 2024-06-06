@@ -6,15 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="./css/tailwind.css">
+    <style>
+        .active {
+            color: rgb(99 102 241);
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.28.2/sweetalert2.all.min.js"></script>
 </head>
 
 <body class="font-sans bg-gray-100" onload="getAllMedicationInfo()">
-    <header class="bg-white shadow-md py-4 px-4 flex justify-between items-center">
+    <header class="bg-white shadow-md py-2 px-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-700">Dashboard</h1>
         <div class="flex items-center space-x-4">
-            <span onclick="trial()"
-                class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</span>
+            <div
+                class="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">
+                <img src="<%= user.profile_img_url %>" height="50px" width="50px" alt="profile image">
+                <%= user.first_name %>
+                    <%= user.last_name %>
+            </div>
+            <!-- <span onclick="trial()"
+                class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">Profile</span> -->
 
             <div class="relative inline-block text-left">
                 <button onclick="toggleDropdown()"
@@ -41,12 +52,12 @@
     </header>
 
     <main class="container mx-auto px-4 py-8 flex h-screen">
-        <aside class="w-64 bg-white shadow-md rounded-lg p-4 flex flex-col overflow-y-auto">
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500 active"
+        <aside id="aside_section" class="mr-4 w-64 bg-white shadow-md rounded-lg p-4 flex flex-col overflow-y-auto">
+            <span class="text-lg font-medium text-gray-700 hover:text-indigo-500 active"
                 id="home-link">Home</span>
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="add-medication-link">Add
+            <span class="text-lg font-medium text-gray-700 hover:text-indigo-500" id="add-medication-link">Add
                 Medication</span>
-            <span href="#" class="text-lg font-medium text-gray-700 hover:text-indigo-500"
+            <span class="text-lg font-medium text-gray-700 hover:text-indigo-500"
                 id="report-generation-link">Report Generation</span>
         </aside>
 
@@ -88,3 +99,35 @@
         });
     }
 </script>
+
+
+<!-- view model -->
+<div id="medicineViewModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-lg font-semibold">Medicine Information</h3>
+            <button class="text-gray-600 hover:text-gray-900" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="mt-4">
+            <p><strong>Name:</strong> <span id="medicineName"></span></p>
+            <p><strong>Description:</strong> <span id="medicineDescription"></span></p>
+            <p><strong>Type:</strong> <span id="medicineType"></span></p>
+
+            <div id="oneTime">
+                <p><strong>One Time Date:</strong> <span id="one_time_date"></span></p>
+            </div>
+            <div id="recurring">
+                <p><strong>Start Date:</strong> <span id="start_date"></span></p>
+                <p><strong>End Date:</strong> <span id="end_date"></span></p>
+            </div>
+            <div id="weekly">
+                <p><strong>Day Of The Week:</strong> <span id="day_of_week"></span></p>
+            </div>
+            <p><strong>time:</strong> <span id="time"></span></p>
+            <p><strong>created at:</strong> <span id="created_at"></span></p>
+        </div>
+        <div class="mt-4 text-right">
+            <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>

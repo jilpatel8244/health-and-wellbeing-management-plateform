@@ -6,5 +6,4 @@ const router = express.Router();
 
 router.post("/update-marks-as-done", userSessionCheck, passport.authenticate('jwt', {session: false, failureRedirect: "/login"}), updateMarkAsDoneAt);
 
-
 module.exports = router;

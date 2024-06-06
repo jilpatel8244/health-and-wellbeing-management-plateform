@@ -33,12 +33,26 @@ function toggleRecurringFields() {
     }
 }
 
-document.getElementById('home-link').addEventListener('click', () => {
+document.getElementById('home-link').addEventListener('click', (event) => {
+    let aside_section = Array.from(document.getElementById('aside_section').children);
+    aside_section.forEach((element) => {
+        element.classList.remove('active');
+    })
+
+    event.target.classList.add('active');
+
     // make fetch request
     getAllMedicationInfo();
 });
 
-document.getElementById('add-medication-link').addEventListener('click', async () => {
+document.getElementById('add-medication-link').addEventListener('click', async (event) => {
+    let aside_section = Array.from(document.getElementById('aside_section').children);
+    aside_section.forEach((element) => {
+        element.classList.remove('active');
+    })
+
+    event.target.classList.add('active');
+
     updateContent(`<div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
         <h1 class="text-2xl font-bold mb-6">Medication Reminder Form</h1>
         <form id="medicationForm" onSubmit="submitHandler(event)">
@@ -126,19 +140,47 @@ document.getElementById('add-medication-link').addEventListener('click', async (
     </div>`)
 });
 
-document.getElementById('report-generation-link').addEventListener('click', async () => {
+document.getElementById('report-generation-link').addEventListener('click', async (event) => {
     // make fetch request
+    let aside_section = Array.from(document.getElementById('aside_section').children);
+    aside_section.forEach((element) => {
+        element.classList.remove('active');
+    })
+
+    event.target.classList.add('active');
+
+    let htmlContent = `<form onSubmit="reportFormHandler(event)" name="reportGenerationForm" id="reportGenerationForm" class="bg-white mx-auto p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Select Date Range</h2>
+        
+        <div class="mb-4">
+            <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date</label>
+            <input type="date" id="startDate" name="startDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="mb-4">
+            <label for="endDate" class="block text-gray-700 font-medium mb-2">End Date</label>
+            <input type="date" id="endDate" name="endDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Submit
+        </button>
+    </form>
+    `
+
+    updateContent(htmlContent);
+    document.getElementById('startDate').max = new Date().toISOString().split("T")[0];
+    document.getElementById('endDate').max = new Date().toISOString().split("T")[0];
 });
 
 async function submitHandler(event) {
     event.preventDefault();
-    console.log(event.target);
 
     let formData = new FormData(event.target);
 
     let formDataObj = {};
 
-    for (var [key, value] of formData.entries()) { 
+    for (var [key, value] of formData.entries()) {
         formDataObj[key] = value;
     }
 
@@ -160,9 +202,7 @@ async function submitHandler(event) {
     } catch (error) {
         console.log(error);
     }
-
-    console.log(formDataObj);
-};
+}
 
 async function getAllMedicationInfo() {
     try {
@@ -185,9 +225,10 @@ function appendData(data) {
         updateContent(`<table id="data-table" class="min-w-full bg-white border border-gray-300">
                         <thead>
                             <tr>
-                                <th class="py-2 px-4 border-b">Name</th>
+                                <th class="py-2 px-4 border-b">Id</th>
+                                <th class="py-2 px-4 border-b">Medicine Name</th>
                                 <th class="py-2 px-4 border-b">Description</th>
-                                <th class="py-2 px-4 border-b">User ID</th>
+                                <th class="py-2 px-4 border-b">Type</th>
                                 <th class="py-2 px-4 border-b">Action</th>
                             </tr>
                         </thead>
@@ -196,49 +237,143 @@ function appendData(data) {
                         </tbody>
                     </table>`);
 
-                const tableBody = document.getElementById('table-body');
-                tableBody.innerHTML = ''; // Clear existing rows
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = ''; // Clear existing rows
 
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.className = 'text-center';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'text-center';
 
-                    const nameCell = document.createElement('td');
-                    nameCell.className = 'py-2 px-4 border-b';
-                    nameCell.textContent = item.name;
-                    row.appendChild(nameCell);
+            const idCell = document.createElement('td');
+            idCell.className = 'py-2 px-4 border-b';
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
 
-                    const descriptionCell = document.createElement('td');
-                    descriptionCell.className = 'py-2 px-4 border-b';
-                    descriptionCell.textContent = item.description;
-                    row.appendChild(descriptionCell);
+            const nameCell = document.createElement('td');
+            nameCell.className = 'py-2 px-4 border-b';
+            nameCell.textContent = item.name;
+            row.appendChild(nameCell);
 
-                    const userIdCell = document.createElement('td');
-                    userIdCell.className = 'py-2 px-4 border-b';
-                    userIdCell.textContent = item.user_id;
-                    row.appendChild(userIdCell);
+            const descriptionCell = document.createElement('td');
+            descriptionCell.className = 'py-2 px-4 border-b';
+            descriptionCell.textContent = item.description;
+            row.appendChild(descriptionCell);
 
-                    const actionCell = document.createElement('td');
-                    actionCell.className = 'py-2 px-4 border-b';
+            const typeCell = document.createElement('td');
+            typeCell.className = 'py-2 px-4 border-b';
+            typeCell.textContent = item.Reminders[0].type;
+            row.appendChild(typeCell);
 
-                    const editButton = document.createElement('button');
-                    editButton.className = 'bg-green-500 text-white py-1 px-3 rounded mr-2';
-                    editButton.textContent = 'Edit';
-                    editButton.onclick = () => editItem(item.id);
+            const actionCell = document.createElement('td');
+            actionCell.className = 'py-2 px-4 border-b';
 
-                    const deleteButton = document.createElement('button');
-                    deleteButton.className = 'bg-red-500 text-white py-1 px-3 rounded';
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.onclick = () => deleteItem(item.id);
+            const viewButton = document.createElement('button');
+            viewButton.className = 'bg-blue-500 text-white py-1 px-3 rounded  mr-2';
+            viewButton.textContent = 'View';
+            viewButton.onclick = () => openViewModal(item.id);
 
-                    actionCell.appendChild(editButton);
-                    actionCell.appendChild(deleteButton);
+            const editButton = document.createElement('button');
+            editButton.className = 'bg-green-500 text-white py-1 px-3 rounded mr-2';
+            editButton.textContent = 'Edit';
+            editButton.onclick = () => editItem(item.id);
 
-                    row.appendChild(actionCell);
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'bg-red-500 text-white py-1 px-3 rounded';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteItem(item.id);
 
-                    tableBody.appendChild(row);
-                });
+            actionCell.appendChild(viewButton);
+            actionCell.appendChild(editButton);
+            actionCell.appendChild(deleteButton);
+
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+        });
     } else {
         contentContainer.innerHTML = `<div>No Data Found</div>`;
+    }
+}
+
+async function openViewModal(medicineId) {
+    try {
+        let data = await fetch(`/medication/get-medication-info-by-id?id=${medicineId}`, {
+            method: 'GET'
+        });
+        data = await data.json();
+        console.log(data);
+
+        if (data.success) {
+            let { id, name, description, createdAt } = data.message;
+            let { type, day_of_week, start_date, end_date, one_time_date, time } = data.message.Reminders[0];
+
+            document.getElementById('medicineName').innerText = name;
+            document.getElementById('medicineDescription').innerText = description;
+            document.getElementById('medicineType').innerText = type;
+            document.getElementById('time').innerText = time;
+            document.getElementById('created_at').innerText = new Date(createdAt).toLocaleString();
+
+            if (type === 'oneTime') {
+                document.getElementById('oneTime').classList.remove('hidden');
+                document.getElementById('one_time_date').innerText = one_time_date;
+                document.getElementById('recurring').classList.add('hidden');
+                document.getElementById('weekly').classList.add('hidden');
+            } else if (type === 'daily') {
+                document.getElementById('recurring').classList.remove('hidden');
+                document.getElementById('start_date').innerText = start_date;
+                document.getElementById('end_date').innerText = end_date;
+                document.getElementById('oneTime').classList.add('hidden');
+                document.getElementById('weekly').classList.add('hidden');
+            } else {
+                document.getElementById('recurring').classList.remove('hidden');
+                document.getElementById('weekly').classList.remove('hidden');
+                document.getElementById('start_date').innerText = start_date;
+                document.getElementById('end_date').innerText = end_date;
+                document.getElementById('day_of_week').innerText = day_of_week;
+                document.getElementById('oneTime').classList.add('hidden');
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    document.getElementById('medicineViewModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('medicineViewModal').classList.add('hidden');
+}
+
+async function reportFormHandler(event) {
+    event.preventDefault();
+    
+    let formData = new FormData(event.target);
+    
+    let formDataObj = {};
+    
+    for (var [key, value] of formData.entries()) {
+        formDataObj[key] = value;
+    }
+    
+    try {
+        const data = await fetch('/report/generate-report', {
+            method: 'POST',
+            body: JSON.stringify(formDataObj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const response = await data.json();
+        console.log(response);
+
+        if (response.success) {
+            if (response.toast) {
+                Swal.fire({
+                    text: response.message,
+                });
+            }
+        }
+    } catch (error) {
+        console.log(error);
     }
 }

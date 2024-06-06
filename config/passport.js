@@ -18,8 +18,6 @@ passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
                 id: jwt_payload.id 
             }
         });
-
-        // console.log(user);
         
         if (user) {
             return done(null, user);

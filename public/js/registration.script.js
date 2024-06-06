@@ -34,14 +34,13 @@
 
 document.getElementById('registrationForm').addEventListener("submit", async (event) => {
     event.preventDefault();
-    console.log(event.target);
 
     let formData = new FormData(event.target);
 
     let email = document.getElementById('email').value;
 
     for (var [key, value] of formData.entries()) {
-        console.log(key, " ", value);
+        // console.log(key, " ", value);
     }
 
     try {

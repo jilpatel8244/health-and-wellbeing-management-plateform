@@ -7,10 +7,6 @@ exports.insertMedication = async (req, res) => {
 
         let { medicationName, description, type, oneTimeDate, oneTimeTime, recurringType, dailyStartDate, dailyEndDate, dailyTime, weeklyStartDate, weeklyEndDate, weeklyTime, dayOfWeek } = req.body;
 
-        console.log(req.body);
-        console.log(req.user[0].id);
-        console.log(req.user[0].email);
-
         // make entry in medication table 
         // make entry in remiders table 
 
@@ -75,14 +71,16 @@ exports.getUserMedications = async (req, res) => {
     try {
         let allUserMedication = await Medication.findAll(
             {
-                attributes: [ 'id', 'name', 'description', 'picture_url', 'user_id' ],
+                attributes: [ 'id', 'name', 'description'],
+                include: {
+                    model: Reminder,
+                    attributes: [ 'type' ]
+                },
                 where: {
                     user_id: req.user[0].id
                 }
             }
         );
-
-        console.log(allUserMedication);
 
         res.status(200).json({
             success: true,
@@ -93,6 +91,32 @@ exports.getUserMedications = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "something went wrong while fetching all user madications"
+        })
+    }
+}
+
+exports.getMedicationInfoById = async (req, res) => {
+    try {
+        let medicationInfo = await Medication.findByPk(req.query.id,
+            {
+                attributes: [ 'id', 'name', 'description', 'createdAt'],
+                include: {
+                    model: Reminder
+                }
+            }
+        );
+
+        console.log(medicationInfo);
+
+        res.status(200).json({
+            success: true,
+            message: medicationInfo
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while getting specific madication info"
         })
     }
 }

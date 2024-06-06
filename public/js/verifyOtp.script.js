@@ -7,9 +7,6 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async (event
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
 
-    console.log(enteredOtp);
-    console.log(email);
-
     try {
         const data = await fetch('/verify-otp', {
             method: 'POST',
@@ -21,7 +18,6 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async (event
         const response = await data.json();
         console.log(response);
         let redirectedAt = document.getElementById('redirectedAt').value;
-        console.log(redirectedAt);
 
         if (response.success) {
             let url = window.origin + '/' + redirectedAt + `?email=${email}`;

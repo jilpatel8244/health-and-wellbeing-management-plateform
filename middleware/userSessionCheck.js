@@ -3,7 +3,6 @@ let { UserSession } = db;
 
 async function userSessionCheck(req, res, next) {
     try {
-        console.log(req.ip);
         let ip = req.ip || req.socket.localAddress || req.connection.remoteAddress;
 
         let userSessionData = await UserSession.findAll(
@@ -16,8 +15,6 @@ async function userSessionCheck(req, res, next) {
                 ]
             }
         );
-
-        console.log("this is a userSessionData : ", userSessionData);
 
         if (userSessionData.length) {
             if (userSessionData[0].logout_at) {

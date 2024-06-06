@@ -41,8 +41,6 @@
 
         let email = document.getElementById('email').value;
 
-        console.log(email);
-
         try {
             const data = await fetch('/verify-email', {
                 method: 'POST',

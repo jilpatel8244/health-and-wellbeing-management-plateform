@@ -1,6 +1,5 @@
 document.getElementById("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    console.log(event.target);
 
     let formData = new FormData(event.target);
 
@@ -9,8 +8,6 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
     for (var [key, value] of formData.entries()) { 
         formDataObj[key] = value;
     }
-
-    console.log(formDataObj);
 
     try {
         const data = await fetch('/login', {

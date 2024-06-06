@@ -6,6 +6,7 @@ const mailService = require('../services/mailTransport.service');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { generalResponse } = require('../helpers/response.helper');
+const { getUser } = require('../repositories/user.repository');
 let { User, UserSession } = db;
 
 exports.createUser = async (req, res) => {
@@ -90,7 +91,6 @@ exports.createUser = async (req, res) => {
             is_active: false,
             gender: gender
         });
-        console.log(newUser);
 
         // send mail to user
         let subject = 'OTP FOR ACTIVATE YOUR ACCOUNT';
@@ -227,8 +227,6 @@ exports.loginHandler = async (req, res) => {
             }
         );
 
-        console.log(newUserSession);
-
         let payLoad = {
             id: userExist[0].id,
             email: userExist[0].email
@@ -357,7 +355,6 @@ exports.verifyEmail = async (req, res) => {
     try {
         let { email } = req.body;
 
-        console.log(email);
         // generate otp
         let otp = generateOTP(6);
 
@@ -372,7 +369,7 @@ exports.verifyEmail = async (req, res) => {
         )
 
         // send it in mail
-        let subject = 'OTP FOR ACTIVATE YOUR ACCOUNT';
+        let subject = 'OTP FOR VERIFY YOUR EMAIL';
         let text = `this is your otp : ${otp}`;
         mailService(email, subject, text);
 
@@ -398,8 +395,6 @@ exports.changePasswordHandler = async (req, res) => {
         // update the password
 
         let { email, password, confirmPassword } = req.body;
-
-        console.log(req.body);
 
         // check user exist or not
         let userExist = await User.findAll({
@@ -480,7 +475,11 @@ exports.renderOtpPage = async (req, res) => {
 }
 
 exports.renderHomePage = async (req, res) => {
-    res.render("pages/home.ejs");
+    let user = await getUser(req.user[0].id);
+
+    res.render("pages/home.ejs", {
+        user: user
+    });
 }
 
 exports.renderVerifyEmailPage = async (req, res) => {

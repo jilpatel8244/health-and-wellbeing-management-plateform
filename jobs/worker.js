@@ -5,6 +5,7 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const path = require('path');
 const db = require('../models/index');
+const { getReportData } = require('../repositories/reminderLog.repository');
 let { User, Reminder, Medication } = db;
 
 // Define Redis connection details
@@ -12,59 +13,50 @@ const redisConnection = {
     host: '127.0.0.1',
     port: 6379,
 };
-  
+
 // Initialize BullMQ queue
 const reportQueue = new Queue('report-generation', { connection: redisConnection });
 
 async function generateReportForUser(user) {
-    const reportData = await Reminder.findAll({
-        attributes: ['id', 'type', 'medication_id', 'one_time_date', 'start_date', 'end_date', 'time'],
-        include: {
-            model: Medication,
-            attributes: [],
-            include: {
-                model: User,
-                attributes: [],
-                where: {
-                    id: user.id
-                }
-            }
-        }
-    });
+    try {
+        let reportData = await getReportData(user.id);
 
-    console.log(reportData);
+        console.log("this is report data ", reportData);
 
-    let date = new Date();
-    const csvFileName = `report.csv`
-    const csvFilePath = path.join(__dirname, '..', 'reports', csvFileName);
+        const csvFileName = `report.csv`
+        const csvFilePath = path.join(__dirname, '..', 'reports', csvFileName);
 
-    const csvWriter = createCsvWriter({
-        path: csvFilePath,
-        header: [
-            { id: 'id', title: 'Id'},
-            { id: 'type', title: 'Type'},
-            { id: 'medication_id', title: 'Medication Id'},
-            { id: 'one_time_date', title: 'One Time Date'},
-            { id: 'start_date', title: 'Start Date'},
-            { id: 'end_date', title: 'End Date'},
-            { id: 'time', title: 'Time'},
-        ]
-    });
+        const csvWriter = createCsvWriter({
+            path: csvFilePath,
+            header: [
+                { id: 'id', title: 'Id' },
+                { id: 'reminder_id', title: 'Reminder Id' },
+                { id: 'mark_as_done_at', title: 'Your Medicine Taken Time' },
+                { id: 'createdAt', title: 'Created At' },
+            ]
+        });
 
-    await csvWriter.writeRecords(reportData);
+        await csvWriter.writeRecords(reportData);
 
-    return { 
-        csvFilePath: csvFilePath,
-        csvFileName: csvFileName
-    };
+        return {
+            csvFilePath: csvFilePath,
+            csvFileName: csvFileName,
+            dataLength: reportData.length
+        };
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 // Define the job processing function
 async function processReportJob(job) {
     let { user } = job.data;
-    const { csvFilePath, csvFileName } = await generateReportForUser(user);
-    console.log("file name: ", csvFileName, " file path: ", csvFilePath);
-    await mailService(user.email, 'Your Weekly Report', 'Report from thisDate to thisDate', null, csvFilePath, csvFileName);
+    const { csvFilePath, csvFileName, dataLength } = await generateReportForUser(user);
+
+    let today = new Date().toLocaleString();
+    let lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleString();
+
+    await mailService(user.email, 'Your Weekly Report', `Report from ${today} to ${lastWeek}, total records: ${dataLength}`, null, csvFilePath, csvFileName);
     fs.unlinkSync(csvFilePath);
 }
 
@@ -75,11 +67,10 @@ async function getUsers() {
         attributes: ['id', 'email']
     });
 
-    console.log(users);
     return users;
 }
 
-const schedule = cron.schedule('35 15 * * 1', async () => {
+const schedule = cron.schedule('06 17 * * 3', async () => {
     const users = await getUsers();
     users.forEach(user => {
         reportQueue.add('generate-report', { user });
