@@ -1,3 +1,19 @@
+let socket = io();
+let userId = parseInt(Array.from(document.getElementsByTagName('body'))[0].id);
+
+socket.on('logout-from-all-devices', (data) => {
+    console.log(data);
+    if (userId === data) {
+        location.reload();
+    }
+});
+
+socket.on('connect', () => {
+    console.log('connected to server ' + socket.id);
+
+    socket.emit('add-user-to-room', userId);   
+});
+
 const contentContainer = document.getElementById('content-container');
 function updateContent(content) {
     contentContainer.innerHTML = content; // Update content container
@@ -346,15 +362,15 @@ function closeModal() {
 
 async function reportFormHandler(event) {
     event.preventDefault();
-    
+
     let formData = new FormData(event.target);
-    
+
     let formDataObj = {};
-    
+
     for (var [key, value] of formData.entries()) {
         formDataObj[key] = value;
     }
-    
+
     try {
         const data = await fetch('/report/generate-report', {
             method: 'POST',

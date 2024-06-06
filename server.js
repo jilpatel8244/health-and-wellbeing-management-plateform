@@ -1,12 +1,21 @@
 const express = require('express');
+const app = express();
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+app.set('io', io);
+
 const router = require('./routes/index.route');
 const path = require('path');
+const socketHandler = require('./helpers/socket');
 const cookieParser = require("cookie-parser");
 require('./jobs/reminderJob');
 require('./jobs/worker');
-const app = express();
 require('dotenv').config();
 require('./config/passport');
+
+socketHandler(io);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -19,6 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`app is listening on port: ${PORT}`);
 })

@@ -35,6 +35,8 @@
     "passport-jwt": "^4.0.1",
     "postcss-cli": "^11.0.0",
     "sequelize": "^6.37.3",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "sweetalert2": "^11.11.0"
   },
   "devDependencies": {

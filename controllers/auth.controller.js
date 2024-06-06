@@ -312,8 +312,9 @@ exports.logoutFromAllDevicesHandler = async (req, res) => {
             }
         );
 
-        res.clearCookie('token');
-        res.redirect('/login');
+        const io = req.app.get('io');
+        
+        io.to(`room_${req.user[0].id}`).emit('logout-from-all-devices', req.user[0].id);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -341,7 +342,9 @@ exports.logoutFromOtherDevicesHandler = async (req, res) => {
             }
         );
 
-        res.render('pages/home');
+        const io = req.app.get('io');
+        
+        io.to(`room_${req.user[0].id}`).emit('logout-from-all-devices', req.user[0].id);
 
     } catch (error) {
         return res.status(500).json({

@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.28.2/sweetalert2.all.min.js"></script>
 </head>
 
-<body class="font-sans bg-gray-100" onload="getAllMedicationInfo()">
+<body id="<%= user.id %>" class="font-sans bg-gray-100" onload="getAllMedicationInfo()">
     <header class="bg-white shadow-md py-2 px-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-700">Dashboard</h1>
         <div class="flex items-center space-x-4">
@@ -71,6 +71,7 @@
 
 </html>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="/js/home.script.js"></script>
 
 <script>
@@ -131,3 +132,4 @@
         </div>
     </div>
 </div>
+
