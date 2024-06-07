@@ -32,47 +32,13 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async (event
             window.location.href = url;
         } else {
             if (response.toast) {
-                let result = await Swal.fire({
-                    text: response.message,
-                    showCancelButton: true,
-                    confirmButtonText: "Regenerate",
-                });
-
-                if (result.value) {
-                    console.log("redirected at verify otp script : ", redirectedAt);
-                    let url = window.origin + `/verify-email?redirectedAt=${redirectedAt}`
-                    window.location.href = url;
-                }
+                triggerToast(response.message, response.toastType, response.toastBtnText, response.redirectionUrl, redirectedAt);
             }
         }
     } catch (error) {
         console.log(error);
     }
 });
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     const otpInputs = document.querySelectorAll("#otp input");
-
-//     otpInputs.forEach((input, index) => {
-//         input.addEventListener("input", (e) => {
-//             if (e.target.value.length === 1) {
-//                 if (index < otpInputs.length - 1) {
-//                     otpInputs[index + 1].focus();
-//                 }
-//             }
-//         });
-
-//         input.addEventListener("keydown", (e) => {
-//             if (e.key === "Backspace" && input.value.length === 0 && index > 0) {
-//                 otpInputs[index - 1].focus();
-//             }
-//         });
-
-//         input.addEventListener("input", (e) => {
-//             e.target.value = e.target.value.replace(/[^0-9]/g, '');
-//         });
-//     });
-// });
 
 document.addEventListener("DOMContentLoaded", function () {
     const otpInputs = document.querySelectorAll("#otp input");

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { generalResponse } = require('../helpers/response.helper');
 const { getUser } = require('../repositories/user.repository');
+const { calculateTimeDifference } = require('../helpers/calculateTimeDifference');
 let { User, UserSession } = db;
 
 exports.createUser = async (req, res) => {
@@ -49,14 +50,20 @@ exports.createUser = async (req, res) => {
                 return res.status(500).json({
                     success: false,
                     message: "You are already registered but not activated, to activate your account click on 'Activate'",
-                    toast: true
+                    toast: true,
+                    toastType: 'custom',
+                    toastBtnText: 'Activate',
+                    redirectionUrl: `/verify-email`
+
                 });
             }
 
             // 2. user registerd and also activated
             return res.status(500).json({
                 success: false,
-                message: "user already registerd"
+                message: "user already registerd",
+                toast: true,
+                toastType: 'error'
             });
         }
 
@@ -66,7 +73,9 @@ exports.createUser = async (req, res) => {
         if (password !== confirmPassword) {
             return res.status(500).json({
                 success: false,
-                message: "passwords doesn't match"
+                message: "passwords doesn't match",
+                toast: true,
+                toastType: 'error'
             });
         }
 
@@ -100,13 +109,16 @@ exports.createUser = async (req, res) => {
         // send response
         return res.status(200).json({
             success: true,
-            message: "user created successfully"
+            message: "user created successfully",
+            toast: false
         });
     } catch (error) {
         console.log(error);
         return res.status(200).json({
             success: false,
-            message: "something went wrong"
+            message: "something went wrong",
+            toast: true,
+            toastType: 'error'
         });
     }
 
@@ -133,7 +145,9 @@ exports.verifyOtp = async (req, res) => {
         if (!user.length) {
             return res.status(500).json({
                 success: false,
-                message: "user not exists (wrong email)"
+                message: "user not exists (wrong email)",
+                toast: true,
+                toastType: 'error'
             });
         }
 
@@ -141,7 +155,9 @@ exports.verifyOtp = async (req, res) => {
         if (user[0].otp !== otp) {
             return res.status(500).json({
                 success: false,
-                message: "wrong otp"
+                message: "wrong otp",
+                toast: true,
+                toastType: 'error'
             });
         }
 
@@ -152,7 +168,10 @@ exports.verifyOtp = async (req, res) => {
             return res.status(500).json({
                 success: false,
                 message: "otp expires",
-                toast: true
+                toast: true,
+                toastType: 'custom',
+                toastBtnText: 'Resend',
+                redirectionUrl: `/verify-email`
             });
         }
 
@@ -168,13 +187,17 @@ exports.verifyOtp = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "user activated successfully",
+            message: "otp verified successfully",
+            toast: true,
+            toastType: 'success'
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "something went wrong while verifing user"
+            message: "something went wrong while verifing user",
+            toast: true,
+            toastType: 'error'
         });
     }
 }
@@ -193,8 +216,10 @@ exports.loginHandler = async (req, res) => {
         if (!userExist.length) {
             return res.status(500).json({
                 success: false,
-                message: "user not exist"
-            })
+                message: "user not exist",
+                toast: true,
+                toastType: 'error'
+            });
         }
 
         // redirect them to verify email page
@@ -202,7 +227,10 @@ exports.loginHandler = async (req, res) => {
             return res.status(500).json({
                 success: false,
                 message: "please activate your account",
-                toast: true
+                toast: true,
+                toastType: 'custom',
+                toastBtnText: 'Activate',
+                redirectionUrl: `/verify-email`
             })
         }
 
@@ -213,7 +241,9 @@ exports.loginHandler = async (req, res) => {
         if (userExist[0].password !== hashedPassword) {
             return res.status(500).json({
                 success: false,
-                message: "password not match"
+                message: "password not match",
+                toast: true,
+                toastType: 'error'
             })
         }
 
@@ -236,38 +266,17 @@ exports.loginHandler = async (req, res) => {
 
         return res.status(200).cookie('token', token).json({
             success: true,
-            message: "user logged in successfully"
+            message: "user logged in successfully",
+            toast: false
         })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "something went wrong while login"
+            message: "something went wrong while login",
+            toast: true,
+            toastType: 'error'
         })
-    }
-}
-
-// aa function ne helper ma nakhvanu che 
-function calculateTimeDifference(createdAt) {
-    // 1. Convert database datetime string to milliseconds since epoch
-    const createdAtInMilliseconds = Date.parse(createdAt);
-
-    // 2. Add 10 minutes to created_at time in milliseconds
-    const tenMinutesLater = createdAtInMilliseconds + (2 * 60 * 1000);
-
-    // 3. Get current time in milliseconds
-    const currentTime = Date.now();
-
-    // 4. Calculate the difference
-    const difference = currentTime - tenMinutesLater;
-
-    console.log(difference);
-
-    // 5. Handle positive or negative difference
-    if (difference > 0) {
-        return true;
-    } else {
-        return false;
     }
 }
 
@@ -293,7 +302,9 @@ exports.logoutHandler = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "something went wrong while loggin out"
+            message: "something went wrong while loggin out",
+            toast: true,
+            toastType: 'error'
         })
     }
 }
@@ -313,14 +324,16 @@ exports.logoutFromAllDevicesHandler = async (req, res) => {
         );
 
         const io = req.app.get('io');
-        
+
         io.to(`room_${req.user[0].id}`).emit('logout-from-all-devices', req.user[0].id);
 
         res.redirect('login');
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "something went wrong while loggin out"
+            message: "something went wrong while loggin out",
+            toast: true,
+            toastType: 'error'
         })
     }
 }
@@ -347,17 +360,21 @@ exports.logoutFromOtherDevicesHandler = async (req, res) => {
         );
 
         const io = req.app.get('io');
-        
-        io.to(`room_${req.user[0].id}`).emit('logout-from-other-devices', {userId: req.user[0].id, socketId: socketId});
-        
+
+        io.to(`room_${req.user[0].id}`).emit('logout-from-other-devices', { userId: req.user[0].id, socketId: socketId });
+
         res.status(200).json({
             success: true,
-            message: "others are logout successfully"
+            message: "others are logout successfully",
+            toast: true,
+            toastType: 'success'
         })
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "something went wrong while loggin out"
+            message: "something went wrong while loggin out",
+            toast: true,
+            toastType: 'error'
         })
     }
 }
@@ -387,13 +404,17 @@ exports.verifyEmail = async (req, res) => {
         // send response
         return res.status(200).json({
             success: true,
-            message: "otp sent successfully"
+            message: "otp sent successfully",
+            toast: true,
+            toastType: 'success'
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "error while email varification"
+            message: "error while email varification",
+            toast: true,
+            toastType: 'error'
         })
     }
 }
@@ -417,7 +438,9 @@ exports.changePasswordHandler = async (req, res) => {
         if (!userExist.length) {
             return res.status(500).json({
                 success: false,
-                message: "user not exist"
+                message: "user not exist",
+                toast: true,
+                toastType: 'error'
             })
         }
 
@@ -425,7 +448,10 @@ exports.changePasswordHandler = async (req, res) => {
             return res.status(500).json({
                 success: false,
                 message: "please activate your account",
-                toast: true
+                toast: true,
+                toastType: 'custom',
+                toastBtnText: 'Activate',
+                redirectionUrl: `/verify-email`
             })
         }
 
@@ -433,7 +459,8 @@ exports.changePasswordHandler = async (req, res) => {
             return res.status(500).json({
                 success: false,
                 message: "password not match",
-                toast: true
+                toast: true,
+                toastType: 'error',
             })
         }
 
@@ -454,14 +481,18 @@ exports.changePasswordHandler = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "password change successfully"
+            message: "password change successfully",
+            toast: true,
+            toastType: 'success',
         });
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "error while changing password"
+            message: "error while changing password",
+            toast: true,
+            toastType: 'error',
         })
     }
 }

@@ -120,3 +120,38 @@ exports.getMedicationInfoById = async (req, res) => {
         })
     }
 }
+
+exports.deleteMadication = async (req, res) => {
+    try {
+        const t = await db.sequelize.transaction();
+
+        let { id } = req.body;
+
+        await Medication.destroy({
+            where: {
+                id: id
+            }
+        }, { transaction: t });
+
+        await Reminder.destroy({
+            where: {
+                medication_id: id
+            }
+        },{ transaction: t });
+
+        await t.commit();
+
+        return res.status(200).json({
+            success: true,
+            message: "Medication deleted successfully"
+        });
+
+    } catch (error) {
+        await t.rollback();
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while deleting madicine"
+        })
+    }
+}

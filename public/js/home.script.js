@@ -25,7 +25,7 @@ async function logoutFromOtherDevicesHandler() {
     try {
         const data = await fetch('/logout-other-devices', {
             method: 'POST',
-            body: JSON.stringify({socketId : socket.id}),
+            body: JSON.stringify({ socketId: socket.id }),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -33,7 +33,7 @@ async function logoutFromOtherDevicesHandler() {
         const response = await data.json();
         console.log(response);
 
-        
+
     } catch (error) {
         console.log(error);
     }
@@ -283,6 +283,7 @@ function appendData(data) {
 
         data.forEach(item => {
             const row = document.createElement('tr');
+            row.setAttribute('id', item.id);
             row.className = 'text-center';
 
             const idCell = document.createElement('td');
@@ -332,7 +333,7 @@ function appendData(data) {
             tableBody.appendChild(row);
         });
     } else {
-        contentContainer.innerHTML = `<div>No Data Found</div>`;
+        contentContainer.innerHTML = `<div>No madication added yet</div>`;
     }
 }
 
@@ -412,6 +413,46 @@ async function reportFormHandler(event) {
                 Swal.fire({
                     text: response.message,
                 });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function deleteItem(id) {
+    try {
+        let result = await Swal.fire({
+            type: 'warning',
+            title: 'Are You Sure?',
+            text: "You wouldn't be retrive this!",
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+        });
+
+        console.log(result);
+
+        if (result.value) {
+            let data = await fetch('/medication/delete-medication', {
+                method: 'POST',
+                body: JSON.stringify({ id: id }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const response = await data.json();
+            console.log(response);
+
+            if (response.success) {
+                Swal.fire('Deleted!', 'Your item has been deleted.', 'success');
+
+                document.getElementById(id).remove();
+                if (!document.getElementById('table-body').childElementCount) {
+                    document.getElementById('content-container').innerHTML = `<div>No madication added yet</div>`;
+                }
+            } else {
+                Swal.fire('Error!', 'There was a problem deleting your item.', 'error');
             }
         }
     } catch (error) {

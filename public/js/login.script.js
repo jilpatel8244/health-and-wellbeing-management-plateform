@@ -5,11 +5,11 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
 
     let formDataObj = {};
 
-    for (var [key, value] of formData.entries()) { 
+    for (var [key, value] of formData.entries()) {
         formDataObj[key] = value;
     }
 
-    if(!validateForm(formDataObj)){
+    if (!validateForm(formDataObj)) {
         return false;
     }
 
@@ -29,16 +29,7 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
             window.location.href = url;
         } else {
             if (response.toast) {
-                let result = await Swal.fire({
-                    text: response.message,
-                    showCancelButton: true,
-                    confirmButtonText: "Activate",
-                });
-
-                if (result.value) {
-                    let url = window.origin + `/verify-email?redirectedAt=login`
-                    window.location.href = url;
-                }
+                triggerToast(response.message, response.toastType, response.toastBtnText, response.redirectionUrl, 'login');
             }
         }
     } catch (error) {
