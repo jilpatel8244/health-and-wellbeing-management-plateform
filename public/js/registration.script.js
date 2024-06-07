@@ -39,8 +39,14 @@ document.getElementById('registrationForm').addEventListener("submit", async (ev
 
     let email = document.getElementById('email').value;
 
-    for (var [key, value] of formData.entries()) {
-        // console.log(key, " ", value);
+    let formDataObj = {};
+
+    for (var [key, value] of formData.entries()) { 
+        formDataObj[key] = value;
+    }
+
+    if(!validateForm(formDataObj)){
+        return false;
     }
 
     try {

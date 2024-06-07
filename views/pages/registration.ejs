@@ -17,38 +17,47 @@
                 <div class="mb-4">
                     <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
                     <input type="text" id="firstName" name="firstName" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="firstName_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
                     <input type="text" id="lastName" name="lastName" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="lastName_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                    <input type="email" id="email" name="email" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <input type="text" id="email" name="email" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="email_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
                     <input type="number" id="phoneNumber" name="phoneNumber" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="phoneNumber_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
                     <input type="number" id="age" name="age" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="age_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
                     <input type="date" id="dateOfBirth" name="dateOfBirth" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="dateOfBirth_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="password" class="block text-sm font-medium text-gray-700">Create Password</label>
                     <input type="password" id="password" name="password" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="password_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="confirmPassword_error"></span>
                 </div>
                 <div class="mb-4">
                     <label for="profile_img" class="block text-sm font-medium text-gray-700">Select Profile Image</label>
-                    <input type="file" id="profile_img" name="profile_img" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <input type="file" accept="image/png, image/jpeg" id="profile_img" name="profile_img" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
+                    <span class="error_span text-red-600 hidden" id="profile_img_error"></span>
                 </div>
                 <div class="flex items-center justify-between">
                     <button type="submit" class="px-4 py-2 rounded-md bg-indigo-500 text-white font-bold shadow sm:w-full">Register</button>
@@ -62,4 +71,5 @@
   </body>
 </html>
 
+<script src="/js/formValidation.js"></script>
 <script src="/js/registration.script.js"></script>

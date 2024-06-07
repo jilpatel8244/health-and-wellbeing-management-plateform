@@ -9,6 +9,10 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
         formDataObj[key] = value;
     }
 
+    if(!validateForm(formDataObj)){
+        return false;
+    }
+
     try {
         const data = await fetch('/login', {
             method: 'POST',

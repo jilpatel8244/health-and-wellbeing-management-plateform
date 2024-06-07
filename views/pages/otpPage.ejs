@@ -17,7 +17,7 @@
             <form class="px-8 py-4" name="verifyOtpForm" id="verifyOtpForm">
               <div class="mb-4">
                 <label for="otp" class="block text-sm font-medium text-gray-700">Enter 6-digit OTP</label>
-                <div class="flex space-x-4">
+                <div class="flex space-x-4" id="otp">
                   <input type="text" id="otp_1" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                   <input type="text" id="otp_2" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                   <input type="text" id="otp_3" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
@@ -25,6 +25,7 @@
                   <input type="text" id="otp_5" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                   <input type="text" id="otp_6" name="otp[]" maxlength="1" class="w-10 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-1">
                 </div>
+                <span id="otp_error" class="text-red-500 hidden"></span>
               </div>
               <div>
                 <input type="hidden" name="redirectedAt" value='<%= redirectedAt %>' id="redirectedAt" />
