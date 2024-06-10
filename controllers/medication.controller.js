@@ -215,7 +215,10 @@ exports.updateMedication = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "reminder updated successfully"
+            message: "Medication updated successfully",
+            toast: true,
+            toastType: 'success',
+
         });
     } catch (error) {
         await t.rollback();

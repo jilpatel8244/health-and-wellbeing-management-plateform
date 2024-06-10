@@ -143,7 +143,7 @@ document.getElementById('add-medication-link').addEventListener('click', async (
             <div id="oneTimeFields" class="hidden">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeDate">Date</label>
-                    <input type="date" name="oneTimeDate" id="oneTimeDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input type="date" onchange="checkStartDate(event)" name="oneTimeDate" id="oneTimeDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeTime">Time</label>
@@ -162,11 +162,11 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                 <div id="dailyFields" class="hidden">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyStartDate">Start Date</label>
-                        <input type="date" name="dailyStartDate" id="dailyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="date" onchange="checkStartDate(event)" name="dailyStartDate" id="dailyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyEndDate">End Date</label>
-                        <input type="date" name="dailyEndDate" id="dailyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="date" onchange="checkEndDate(event)" name="dailyEndDate" id="dailyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyTime">Time</label>
@@ -176,11 +176,11 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                 <div id="weeklyFields" class="hidden">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyStartDate">Start Date</label>
-                        <input type="date" name="weeklyStartDate" id="weeklyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="date" onchange="checkStartDate(event)" name="weeklyStartDate" id="weeklyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyEndDate">End Date</label>
-                        <input type="date" name="weeklyEndDate" id="weeklyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="date" onchange="checkEndDate(event)" name="weeklyEndDate" id="weeklyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyTime">Time</label>
@@ -205,8 +205,55 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
             </div>
         </form>
-    </div>`)
+    </div>
+    `)
 });
+
+function checkStartDate(event) {
+    let selectedDate = event.target;
+
+    let today = new Date().toISOString().split('T')[0];
+
+    if (selectedDate.value < today) {
+        alert("you cannot select the date before today");
+        selectedDate.value = '';
+    }
+
+    let endDate;
+    if (selectedDate.name === 'dailyStartDate') {
+        endDate = document.getElementById('dailyEndDate');
+    } else if (selectedDate.name === 'weeklyStartDate') {
+        endDate = document.getElementById('weeklyEndDate');
+    }
+
+    if (selectedDate.name != 'oneTimeDate') {
+        if (endDate.value) {
+            if (endDate.value < selectedDate.value) {
+                alert('start date can not be greater than end date');
+                selectedDate.value = '';
+            }
+        }
+    }
+}
+
+function checkEndDate(event) {
+    let endDate = event.target;
+    let startDate;
+    if (event.target.name === 'dailyEndDate') {
+        startDate = document.getElementById('dailyStartDate');
+    } else {
+        startDate = document.getElementById('weeklyStartDate');
+    }
+
+    if (!startDate.value) {
+        alert('please select start date first');
+        endDate.value = '';
+    }
+    if (startDate.value > endDate.value) {
+        alert('end date cannot be smaller than start date');
+        endDate.value = '';
+    }
+}
 
 document.getElementById('report-generation-link').addEventListener('click', async (event) => {
     // make fetch request
@@ -581,10 +628,13 @@ async function updateHandler(event) {
         const response = await data.json();
         console.log(response);
 
-        // if (response.success) {
-        //     let url = window.origin + '/home';
-        //     window.location.href = url;
-        // }
+        if (response.success) {
+            if (response.toast) {
+                triggerToast(response.message, response.toastType, null, '/home');
+            }
+            // let url = window.origin + '/home';
+            // window.location.href = url;
+        }
     } catch (error) {
         console.log(error);
     }

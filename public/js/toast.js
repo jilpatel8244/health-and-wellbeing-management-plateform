@@ -10,11 +10,20 @@ async function triggerToast(message, toastType, toastBtnText, redirectionUrl, re
             let url = window.origin + redirectionUrl + '?redirectedAt=' + redirectedAt
             window.location.href = url;
         }
+    } else if (toastType === 'success') {
+        let result = await Swal.fire({
+            type: toastType,
+            text: message,
+        });
+        if (result.value) {
+            let url = window.origin + redirectionUrl
+            window.location.href = url;
+        }    
     } else {
-            await Swal.fire({
-                type: toastType,
-                title: "Oops...",
-                text: message,
-            });
+        await Swal.fire({
+            type: toastType,
+            title: "Oops...",
+            text: message,
+        });
     }
 }

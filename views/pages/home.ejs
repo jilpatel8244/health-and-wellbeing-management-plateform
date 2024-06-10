@@ -20,7 +20,7 @@
         <div class="flex items-center space-x-4">
             <div
                 class="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-indigo-500 hover:bg-gray-200">
-                <img src="<%= user.profile_img_url %>" height="50px" width="50px" alt="profile image">
+                <img class="rounded-full" src="<%= user.profile_img_url %>" height="50px" width="50px" alt="profile image">
                 <p class="px-1"><%= user.first_name %> <%= user.last_name %></p>
             </div>
             <!-- <span onclick="trial()"
@@ -69,6 +69,7 @@
 
 </html>
 
+<script src="/js/toast.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/home.script.js"></script>
 
