@@ -12,9 +12,13 @@ async function getUsers() {
 }
 
 cron.schedule('38 17 * * thu', async () => {
-    const users = await getUsers();
-    users.forEach(user => {
-        reportQueue.add('generateAndSendReport', { user });
-    });
-    console.log('Scheduled jobs for user report generation.');
+    try {
+        const users = await getUsers();
+        users.forEach(user => {
+            reportQueue.add('generateAndSendReport', { user });
+        });
+        console.log('Scheduled jobs for user report generation.');
+    } catch (error) {
+        console.log(error);
+    }
 });

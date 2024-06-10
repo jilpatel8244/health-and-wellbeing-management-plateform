@@ -10,16 +10,20 @@ cron.schedule('* * * * *', () => {
 });
 
 const checkAndSendReminders = async () => {
-    const reminders = await Reminder.findAll({
-        include: [
-            {
-              model: Medication,
-              include: [User],
-            },
-        ],
-    });
-
-    reminders.forEach(async (reminder) => {
-        await reminderQueue.add('checkAndSendReminder', { reminder })
-    });
+    try {
+        const reminders = await Reminder.findAll({
+            include: [
+                {
+                  model: Medication,
+                  include: [User],
+                },
+            ],
+        });
+    
+        reminders.forEach(async (reminder) => {
+            await reminderQueue.add('checkAndSendReminder', { reminder })
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }

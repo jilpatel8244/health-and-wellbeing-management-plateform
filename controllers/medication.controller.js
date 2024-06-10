@@ -4,7 +4,6 @@ let { Medication, Reminder, User } = db;
 exports.insertMedication = async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-
         let { medicationName, description, type, oneTimeDate, oneTimeTime, recurringType, dailyStartDate, dailyEndDate, dailyTime, weeklyStartDate, weeklyEndDate, weeklyTime, dayOfWeek } = req.body;
 
         // make entry in medication table 
@@ -33,7 +32,7 @@ exports.insertMedication = async (req, res) => {
                 payload = {
                     type: 'daily',
                     start_date: dailyStartDate,
-                    end_date: dailyEndDate, 
+                    end_date: dailyEndDate,
                     time: dailyTime,
                     medication_id: newMedication.id
                 }
@@ -41,7 +40,7 @@ exports.insertMedication = async (req, res) => {
                 payload = {
                     type: 'weekly',
                     start_date: weeklyStartDate,
-                    end_date: weeklyEndDate, 
+                    end_date: weeklyEndDate,
                     time: weeklyTime,
                     day_of_week: dayOfWeek,
                     medication_id: newMedication.id
@@ -71,10 +70,10 @@ exports.getUserMedications = async (req, res) => {
     try {
         let allUserMedication = await Medication.findAll(
             {
-                attributes: [ 'id', 'name', 'description'],
+                attributes: ['id', 'name', 'description'],
                 include: {
                     model: Reminder,
-                    attributes: [ 'type' ]
+                    attributes: ['type']
                 },
                 where: {
                     user_id: req.user[0].id
@@ -99,14 +98,12 @@ exports.getMedicationInfoById = async (req, res) => {
     try {
         let medicationInfo = await Medication.findByPk(req.query.id,
             {
-                attributes: [ 'id', 'name', 'description', 'createdAt'],
+                attributes: ['id', 'name', 'description', 'createdAt'],
                 include: {
                     model: Reminder
                 }
             }
         );
-
-        console.log(medicationInfo);
 
         res.status(200).json({
             success: true,
@@ -137,7 +134,7 @@ exports.deleteMadication = async (req, res) => {
             where: {
                 medication_id: id
             }
-        },{ transaction: t });
+        }, { transaction: t });
 
         await t.commit();
 
@@ -152,6 +149,80 @@ exports.deleteMadication = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "something went wrong while deleting madicine"
+        })
+    }
+}
+
+exports.updateMedication = async (req, res) => {
+    try {
+        const t = await db.sequelize.transaction();
+
+        let { medicationId, medicationName, description, type, oneTimeDate, oneTimeTime, recurringType, dailyStartDate, dailyEndDate, dailyTime, weeklyStartDate, weeklyEndDate, weeklyTime, dayOfWeek } = req.body;
+
+        // update entry in medication table 
+        // update entry in remiders table 
+
+        let newMedication = await Medication.update(
+            {
+                name: medicationName,
+                description: description,
+            },
+            {
+                where: {
+                    id: medicationId
+                }
+            },
+            { transaction: t }
+        );
+
+        let payload = {};
+
+        if (type === 'oneTime') {
+            payload = {
+                type: 'oneTime',
+                one_time_date: oneTimeDate,
+                time: oneTimeTime,
+                medication_id: newMedication.id
+            }
+        } else {
+            if (recurringType === 'daily') {
+                payload = {
+                    type: 'daily',
+                    start_date: dailyStartDate,
+                    end_date: dailyEndDate,
+                    time: dailyTime,
+                    medication_id: newMedication.id
+                }
+            } else {
+                payload = {
+                    type: 'weekly',
+                    start_date: weeklyStartDate,
+                    end_date: weeklyEndDate,
+                    time: weeklyTime,
+                    day_of_week: dayOfWeek,
+                    medication_id: newMedication.id
+                }
+            }
+        }
+
+        await Reminder.update(payload, {
+            where: {
+                medication_id: medicationId
+            }
+        }, { transaction: t });
+
+        await t.commit();
+
+        return res.status(200).json({
+            success: true,
+            message: "reminder updated successfully"
+        });
+    } catch (error) {
+        await t.rollback();
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "something went wrong while updating madicine"
         })
     }
 }

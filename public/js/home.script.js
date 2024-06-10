@@ -54,9 +54,22 @@ function toggleFields() {
 
     if (type === 'oneTime') {
         oneTimeFields.classList.remove('hidden');
+
+        document.getElementById('weeklyStartDate').value = '';
+        document.getElementById('weeklyEndDate').value = '';
+        document.getElementById('weeklyTime').value = '';
+
+        document.getElementById('dailyStartDate').value = '';
+        document.getElementById('dailyEndDate').value = '';
+        document.getElementById('dailyTime').value = '';
     } else if (type === 'recurring') {
         recurringFields.classList.remove('hidden');
+
+        document.getElementById('oneTimeDate').value = '';
+        document.getElementById('oneTimeTime').value = '';
     }
+
+    // remove fields value
 }
 
 function toggleRecurringFields() {
@@ -69,9 +82,23 @@ function toggleRecurringFields() {
 
     if (recurringType === 'daily') {
         dailyFields.classList.remove('hidden');
+
+        // remove data of week field
+        document.getElementById('weeklyStartDate').value = '';
+        document.getElementById('weeklyEndDate').value = '';
+        document.getElementById('weeklyTime').value = '';
+        document.getElementById('dayOfWeek').options[0].selected = true;
+
     } else if (recurringType === 'weekly') {
         weeklyFields.classList.remove('hidden');
+
+        // remove data of daily field
+        document.getElementById('dailyStartDate').value = '';
+        document.getElementById('dailyEndDate').value = '';
+        document.getElementById('dailyTime').value = '';
     }
+
+    // remove fields value
 }
 
 document.getElementById('home-link').addEventListener('click', (event) => {
@@ -317,7 +344,7 @@ function appendData(data) {
             const editButton = document.createElement('button');
             editButton.className = 'bg-green-500 text-white py-1 px-3 rounded mr-2';
             editButton.textContent = 'Edit';
-            editButton.onclick = () => editItem(item.id);
+            editButton.onclick = () => openEditModel(item.id);
 
             const deleteButton = document.createElement('button');
             deleteButton.className = 'bg-red-500 text-white py-1 px-3 rounded';
@@ -382,8 +409,78 @@ async function openViewModal(medicineId) {
     document.getElementById('medicineViewModal').classList.remove('hidden');
 }
 
-function closeModal() {
-    document.getElementById('medicineViewModal').classList.add('hidden');
+async function openEditModel(medicineId) {
+    try {
+        let data = await fetch(`/medication/get-medication-info-by-id?id=${medicineId}`, {
+            method: 'GET'
+        });
+        data = await data.json();
+        console.log(data);
+
+        if (data.success) {
+            let { id, name, description } = data.message;
+            let { type, day_of_week, start_date, end_date, one_time_date, time } = data.message.Reminders[0];
+
+            document.getElementById('medicationId').value = id;
+            document.getElementById('medicationName').value = name;
+            document.getElementById('description').value = description;
+
+            let selectType = document.getElementById('type');
+            if (type === 'oneTime') {
+                selectType.options[1].selected = true;
+                document.getElementById('oneTimeFields').classList.remove('hidden');
+
+                document.getElementById('oneTimeDate').value = one_time_date;
+                document.getElementById('oneTimeTime').value = time;
+
+            } else {
+                selectType.options[2].selected = true;
+                document.getElementById('recurringFields').classList.remove('hidden');
+
+                let selectedRecurringType = document.getElementById('recurringType');
+
+                if (!day_of_week) {
+                    selectedRecurringType.options[1].selected = true;
+                    document.getElementById('dailyFields').classList.remove('hidden');
+
+                    document.getElementById('dailyStartDate').value = start_date;
+                    document.getElementById('dailyEndDate').value = end_date;
+                    document.getElementById('dailyTime').value = time;
+                } else {
+                    selectedRecurringType.options[2].selected = true;
+                    document.getElementById('weeklyFields').classList.remove('hidden');
+
+                    document.getElementById('weeklyStartDate').value = start_date;
+                    document.getElementById('weeklyEndDate').value = end_date;
+                    document.getElementById('weeklyTime').value = time;
+
+                    let dayOfWeekSelect = document.getElementById('dayOfWeek');
+                    for (const element of dayOfWeekSelect.options) {
+                        if (element.value === day_of_week) {
+                            element.selected = true;
+                        }
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    document.getElementById('medicationEditModel').classList.remove('hidden');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+
+    if (id === 'medicationEditModel') {
+        document.getElementById('updateMedicationForm').reset();
+
+        document.getElementById('oneTimeFields').classList.add('hidden');
+        document.getElementById('recurringFields').classList.add('hidden');
+        document.getElementById('dailyFields').classList.add('hidden');
+        document.getElementById('weeklyFields').classList.add('hidden');
+    }
 }
 
 async function reportFormHandler(event) {
@@ -455,6 +552,39 @@ async function deleteItem(id) {
                 Swal.fire('Error!', 'There was a problem deleting your item.', 'error');
             }
         }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function updateHandler(event) {
+    event.preventDefault();
+
+    let formData = new FormData(event.target);
+
+    let formDataObj = {};
+
+    for (var [key, value] of formData.entries()) {
+        formDataObj[key] = value;
+    }
+
+    console.log(formDataObj);
+
+    try {
+        const data = await fetch('/medication/update-medication', {
+            method: 'PUT',
+            body: JSON.stringify(formDataObj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const response = await data.json();
+        console.log(response);
+
+        // if (response.success) {
+        //     let url = window.origin + '/home';
+        //     window.location.href = url;
+        // }
     } catch (error) {
         console.log(error);
     }
