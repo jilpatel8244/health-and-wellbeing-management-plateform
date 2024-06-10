@@ -777,3 +777,41 @@ async function updateHandler(event) {
         console.log(error);
     }
 }
+
+document.getElementById('add-data-using-csv-link').addEventListener('click', async (event) => {
+    let aside_section = Array.from(document.getElementById('aside_section').children);
+    aside_section.forEach((element) => {
+        element.classList.remove('active');
+    })
+
+    event.target.classList.add('active');
+
+    updateContent(`<form id="uploadCsvForm" onsubmit="uploadCsvHandler(event)" enctype="multipart/form-data">
+                            <input type="file" name="file" accept=".csv" required />
+                            <button type="submit" class="bg-green-500 text-white py-1 px-3 rounded mr-2">Upload CSV</button>
+                        </form>`);
+
+});
+
+async function uploadCsvHandler(event) {
+    try {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        const data = await fetch('/medication/upload-csv', {
+            method: 'POST',
+            body: formData
+        });
+
+        const response = await data.json();
+        if (response.success) {
+            console.log(response);
+        }
+        if (response.toast) {
+            triggerToast(response.message, response.toastType, null, '/home', null);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}

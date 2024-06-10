@@ -1,0 +1,4 @@
+name,description,user_id,picture_url,type,one_time_date,start_date,end_date,time,day_of_week
+dolo,testing1,14,,oneTime,2024-06-10,,,18:35:00,
+paracitamol,testing2,14,,daily,,2024-06-10,2024-06-15,18:40:00,
+Oflox-oz,testing3,14,,weekly,,2024-06-10,2024-06-15,18:40:00,monday

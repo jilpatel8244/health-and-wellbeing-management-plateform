@@ -16,8 +16,14 @@ const redisConnection = require('../config/redisConfig');
 const otpQueue = new Queue('otpQueue', { connection: redisConnection });
 
 new Worker('otpQueue', async (job) => {
-    let { email, subject, text } = job.data;
-    mailService(email, subject, text);
+    try {
+        
+        let { email, subject, text } = job.data;
+        mailService(email, subject, text);
+    } catch (err) {
+        console.log(err,"err");
+    }
+
 }, { connection: redisConnection });
 
 exports.createUser = async (req, res) => {
@@ -114,6 +120,7 @@ exports.createUser = async (req, res) => {
         // send mail to user
         let subject = 'OTP FOR ACTIVATE YOUR ACCOUNT';
         let text = `this is your otp : ${otp}`;
+
         await otpQueue.add('otpQueue', { email: email, subject: subject, text: text });
 
         // send response
