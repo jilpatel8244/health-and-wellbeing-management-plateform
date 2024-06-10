@@ -575,22 +575,30 @@ async function reportFormHandler(event) {
     }
 
     try {
-        const data = await fetch('/report/generate-report', {
+        const response = await fetch('/report/generate-report', {
             method: 'POST',
             body: JSON.stringify(formDataObj),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        const response = await data.json();
-        console.log(response);
+        // const response = await data.json();
+        // console.log(response);
 
-        if (response.success) {
-            if (response.toast) {
-                Swal.fire({
-                    text: response.message,
-                });
-            }
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'custom_report.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                type: 'success',
+                text: 'report send successfully',
+            });
         }
     } catch (error) {
         console.log(error);

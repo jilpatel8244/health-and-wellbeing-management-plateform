@@ -14,13 +14,35 @@ exports.getReportDataBetweenSpecificDates = async (req, res) => {
     try {
         let { startDate, endDate } = req.body;
 
-        await customGenerationReportQueue.add('customGenerationReportQueue', { startDate: startDate, endDate: endDate, userId: req.user[0].id, userEmail: req.user[0].email });
+        let modifiedStartDate = new Date(startDate);
+        modifiedStartDate.setHours(0, 0, 0, 0);
 
-        return res.status(200).json({
-            success: true,
-            message: "Report sent successfully to your email",
-            toast: true,
+        let modifiedEndDate = new Date(endDate);
+        modifiedEndDate.setHours(23, 59, 59, 999);
+
+        let reportData = await getReportDataBetweenSpecificDates(modifiedStartDate, modifiedEndDate, req.user[0].id);
+
+        
+        const csvStringifier = createObjectCsvStringifier({
+            header: [
+                { id: 'id', title: 'Id' },
+                { id: 'reminder_id', title: 'Reminder Id' },
+                { id: 'mark_as_done_at', title: 'Your Medicine Taken Time' },
+                { id: 'createdAt', title: 'Created At' },
+            ]
         });
+        
+        const csvHeader = csvStringifier.getHeaderString();
+        const csvBody = csvStringifier.stringifyRecords(reportData);
+        const csvData = csvHeader + csvBody;
+        
+        await customGenerationReportQueue.add('customGenerationReportQueue', { startDate: startDate, endDate: endDate, userEmail: req.user[0].email, csvData: csvData, reportLength: reportData.length });
+
+        res.setHeader('Content-type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=custom_report.csv');
+        
+        res.send(Buffer.from(csvData));
+        
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -32,34 +54,11 @@ exports.getReportDataBetweenSpecificDates = async (req, res) => {
 
 
 new Worker('customGenerationReportQueue', async (job) => {
-    let { startDate, endDate, userId,userEmail } = await job.data;
-
-    let modifiedStartDate = new Date(startDate);
-    modifiedStartDate.setHours(0, 0, 0, 0);
-
-    let modifiedEndDate = new Date(endDate);
-    modifiedEndDate.setHours(23, 59, 59, 999);
-
-    let reportData = await getReportDataBetweenSpecificDates(modifiedStartDate, modifiedEndDate, userId);
-
-    const csvStringifier = createObjectCsvStringifier({
-        header: [
-            { id: 'id', title: 'Id' },
-            { id: 'reminder_id', title: 'Reminder Id' },
-            { id: 'mark_as_done_at', title: 'Your Medicine Taken Time' },
-            { id: 'createdAt', title: 'Created At' },
-        ]
-    });
-
-    const csvHeader = csvStringifier.getHeaderString();
-    const csvBody = csvStringifier.stringifyRecords(reportData);
-    const csvData = csvHeader + csvBody;
+    let { startDate, endDate, userEmail, csvData, reportLength } = await job.data;
 
     csvFileName = 'custom_report.csv';
 
-    await mailService(userEmail, 'Your Medication Report', `Report from ${startDate} to ${endDate}, total records: ${reportData.length}`, null, Buffer.from(csvData), csvFileName);
-
-
+    await mailService(userEmail, 'Your Medication Report', `Report from ${startDate} to ${endDate}, total records: ${reportLength}`, null, Buffer.from(csvData), csvFileName);
 
     // send report to mail in csv but this time use buffer
     // const csvFileName = `custom_report.csv`

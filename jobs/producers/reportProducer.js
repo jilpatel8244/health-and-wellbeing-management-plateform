@@ -11,7 +11,7 @@ async function getUsers() {
     return users;
 }
 
-cron.schedule('21 14 * * monday', async () => {
+cron.schedule('40 14 * * monday', async () => {
     try {
         const users = await getUsers();
         users.forEach(async (user) => {
