@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-function mailService(to, subject, text, html, csvFilePath, csvFileName) {
+function mailService(to, subject, text, html, attachmentBuffer, attachmentName) {
 
     return new Promise((resolve, reject) => {
         let mailTransporter = nodemailer.createTransport({
@@ -13,10 +13,10 @@ function mailService(to, subject, text, html, csvFilePath, csvFileName) {
         });
 
         let attachmentsDetails = [];
-        if (csvFilePath && csvFileName) {
+        if (attachmentBuffer && attachmentName) {
             attachmentsDetails.push({
-                filename: csvFileName,
-                path: csvFilePath
+                filename: attachmentName,
+                content: attachmentBuffer
             })
         }
     

@@ -6,6 +6,7 @@ const path = require('path');
 const mailService = require('../services/mailTransport.service');
 const { Queue } = require("bullmq");
 const redisConnection = require('../config/redisConfig');
+const { createObjectCsvStringifier } = require('csv-writer');
 
 const customGenerationReportQueue = new Queue('customGenerationReportQueue', { connection: redisConnection });
 
@@ -41,12 +42,7 @@ new Worker('customGenerationReportQueue', async (job) => {
 
     let reportData = await getReportDataBetweenSpecificDates(modifiedStartDate, modifiedEndDate, userId);
 
-    // send report to mail in csv but this time use buffer
-    const csvFileName = `custom_report.csv`
-    const csvFilePath = path.join(__dirname, '..', 'reports', csvFileName);
-
-    const csvWriter = createCsvWriter({
-        path: csvFilePath,
+    const csvStringifier = createObjectCsvStringifier({
         header: [
             { id: 'id', title: 'Id' },
             { id: 'reminder_id', title: 'Reminder Id' },
@@ -55,8 +51,32 @@ new Worker('customGenerationReportQueue', async (job) => {
         ]
     });
 
-    await csvWriter.writeRecords(reportData);
+    const csvHeader = csvStringifier.getHeaderString();
+    const csvBody = csvStringifier.stringifyRecords(reportData);
+    const csvData = csvHeader + csvBody;
 
-    await mailService(userEmail, 'Your Medication Report', `Report from ${startDate} to ${endDate}, total records: ${reportData.length}`, null, csvFilePath, csvFileName);
-    fs.unlinkSync(csvFilePath);
+    csvFileName = 'custom_report.csv';
+
+    await mailService(userEmail, 'Your Medication Report', `Report from ${startDate} to ${endDate}, total records: ${reportData.length}`, null, Buffer.from(csvData), csvFileName);
+
+
+
+    // send report to mail in csv but this time use buffer
+    // const csvFileName = `custom_report.csv`
+    // const csvFilePath = path.join(__dirname, '..', 'reports', csvFileName);
+
+    // const csvWriter = createCsvWriter({
+    //     path: csvFilePath,
+    //     header: [
+    //         { id: 'id', title: 'Id' },
+    //         { id: 'reminder_id', title: 'Reminder Id' },
+    //         { id: 'mark_as_done_at', title: 'Your Medicine Taken Time' },
+    //         { id: 'createdAt', title: 'Created At' },
+    //     ]
+    // });
+
+    // await csvWriter.writeRecords(reportData);
+
+    // await mailService(userEmail, 'Your Medication Report', `Report from ${startDate} to ${endDate}, total records: ${reportData.length}`, null, csvFilePath, csvFileName);
+    // fs.unlinkSync(csvFilePath);
 }, { connection: redisConnection });
