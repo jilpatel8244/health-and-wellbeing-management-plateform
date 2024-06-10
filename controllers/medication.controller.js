@@ -154,9 +154,8 @@ exports.deleteMadication = async (req, res) => {
 }
 
 exports.updateMedication = async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-        const t = await db.sequelize.transaction();
-
         let { medicationId, medicationName, description, type, oneTimeDate, oneTimeTime, recurringType, dailyStartDate, dailyEndDate, dailyTime, weeklyStartDate, weeklyEndDate, weeklyTime, dayOfWeek } = req.body;
 
         // update entry in medication table 
@@ -218,7 +217,6 @@ exports.updateMedication = async (req, res) => {
             message: "Medication updated successfully",
             toast: true,
             toastType: 'success',
-
         });
     } catch (error) {
         await t.rollback();

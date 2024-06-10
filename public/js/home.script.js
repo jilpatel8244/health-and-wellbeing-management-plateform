@@ -127,10 +127,12 @@ document.getElementById('add-medication-link').addEventListener('click', async (
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="medicationName">Medication Name</label>
                 <input type="text" name="medicationName" id="medicationName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <span class="hidden text-red-500" id="medicationName_error"></span>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
                 <textarea id="description" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                <span class="hidden text-red-500" id="description_error"></span>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="type">Reminder Type</label>
@@ -139,15 +141,18 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                     <option value="oneTime">One Time</option>
                     <option value="recurring">Recurring</option>
                 </select>
+                <span class="hidden text-red-500" id="type_error"></span>
             </div>
             <div id="oneTimeFields" class="hidden">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeDate">Date</label>
                     <input type="date" onchange="checkStartDate(event)" name="oneTimeDate" id="oneTimeDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <span class="hidden text-red-500" id="oneTimeDate_error"></span>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeTime">Time</label>
                     <input type="time" name="oneTimeTime" id="oneTimeTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <span class="hidden text-red-500" id="oneTimeTime_error"></span>
                 </div>
             </div>
             <div id="recurringFields" class="hidden">
@@ -158,33 +163,40 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
                     </select>
+                    <span class="hidden text-red-500" id="recurringType_error"></span>
                 </div>
                 <div id="dailyFields" class="hidden">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyStartDate">Start Date</label>
                         <input type="date" onchange="checkStartDate(event)" name="dailyStartDate" id="dailyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="dailyStartDate_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyEndDate">End Date</label>
                         <input type="date" onchange="checkEndDate(event)" name="dailyEndDate" id="dailyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="dailyEndDate_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyTime">Time</label>
                         <input type="time" name="dailyTime" id="dailyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="dailyTime_error"></span>
                     </div>
                 </div>
                 <div id="weeklyFields" class="hidden">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyStartDate">Start Date</label>
                         <input type="date" onchange="checkStartDate(event)" name="weeklyStartDate" id="weeklyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="weeklyStartDate_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyEndDate">End Date</label>
                         <input type="date" onchange="checkEndDate(event)" name="weeklyEndDate" id="weeklyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="weeklyEndDate_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyTime">Time</label>
                         <input type="time" name="weeklyTime" id="weeklyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="weeklyTime_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="dayOfWeek">Day of the Week</label>
@@ -198,6 +210,7 @@ document.getElementById('add-medication-link').addEventListener('click', async (
                             <option value="friday">Friday</option>
                             <option value="saturday">Saturday</option>
                         </select>
+                        <span class="hidden text-red-500" id="dayOfWeek_error"></span>
                     </div>
                 </div>
             </div>
@@ -332,6 +345,10 @@ async function submitHandler(event) {
         formDataObj[key] = value;
     }
 
+    if (!validateMadicationForm(formDataObj)) {
+        return false;
+    }
+
     try {
         const data = await fetch('/medication/add-medication', {
             method: 'POST',
@@ -350,6 +367,78 @@ async function submitHandler(event) {
     } catch (error) {
         console.log(error);
     }
+}
+
+function validateMadicationForm(formDataObj) {
+    console.log(formDataObj);
+    let validate = true;
+
+    let errorSpan;
+    if (!formDataObj.medicationName) {
+        validate = false;
+        activateErrorSpan(`medicationName_error`, 'please enter medication name');
+    }
+    if (!formDataObj.description) {
+        validate = false;
+        activateErrorSpan(`description_error`, 'please enter medication description');
+    }
+    if (!formDataObj.type) {
+        validate = false;
+        activateErrorSpan(`type_error`, 'please enter reminder type');
+    }
+    if (formDataObj.type === 'oneTime') {
+        if (!formDataObj.oneTimeDate) {
+            validate = false;
+            activateErrorSpan(`oneTimeDate_error`, 'please enter date');
+        }
+        if (!formDataObj.oneTimeTime) {
+            validate = false;
+            activateErrorSpan(`oneTimeTime_error`, 'please enter time');
+        }
+    } else if (formDataObj.type === 'recurring') {
+        if (!formDataObj.recurringType) {
+            validate = false;
+            activateErrorSpan(`recurringType_error`, 'please enter recurring type');
+        }
+        if (formDataObj.recurringType === 'daily') {
+            if (!formDataObj.dailyStartDate) {
+                validate = false;
+                activateErrorSpan(`dailyStartDate_error`, 'please enter start date');
+            }
+            if (!formDataObj.dailyEndDate) {
+                validate = false;
+                activateErrorSpan(`dailyEndDate_error`, 'please enter end date');
+            }
+            if (!formDataObj.dailyTime) {
+                validate = false;
+                activateErrorSpan(`dailyTime_error`, 'please enter time');
+            }
+        } else if (formDataObj.recurringType === 'weekly') {
+            if (!formDataObj.weeklyStartDate) {
+                validate = false;
+                activateErrorSpan(`weeklyStartDate_error`, 'please enter start date');
+            }
+            if (!formDataObj.weeklyEndDate) {
+                validate = false;
+                activateErrorSpan(`weeklyEndDate_error`, 'please enter end date');
+            }
+            if (!formDataObj.weeklyTime) {
+                validate = false;
+                activateErrorSpan(`weeklyTime_error`, 'please enter time');
+            }
+            if (!formDataObj.dayOfWeek) {
+                validate = false;
+                activateErrorSpan(`dayOfWeek_error`, 'please select day of the week');
+            }
+        }
+    }
+    return validate;
+}
+
+function activateErrorSpan(id, text) {
+    errorSpan = document.getElementById(id);
+    errorSpan.innerHTML = text;
+    errorSpan.classList.remove('hidden');
 }
 
 async function getAllMedicationInfo() {
@@ -560,6 +649,12 @@ function closeModal(id) {
         document.getElementById('recurringFields').classList.add('hidden');
         document.getElementById('dailyFields').classList.add('hidden');
         document.getElementById('weeklyFields').classList.add('hidden');
+
+        // hide error span tag
+        let allErrorSpanTags = Array.from(document.getElementById('updateMedicationForm').querySelectorAll('span'));
+        allErrorSpanTags.forEach((element) => {
+            element.classList.add('hidden');
+        });
     }
 }
 
@@ -594,7 +689,7 @@ async function reportFormHandler(event) {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-            
+
             Swal.fire({
                 type: 'success',
                 text: 'report send successfully',
@@ -656,7 +751,9 @@ async function updateHandler(event) {
         formDataObj[key] = value;
     }
 
-    console.log(formDataObj);
+    if (!validateMadicationForm(formDataObj)) {
+        return false;
+    }
 
     try {
         const data = await fetch('/medication/update-medication', {

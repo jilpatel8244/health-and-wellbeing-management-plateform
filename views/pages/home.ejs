@@ -69,38 +69,6 @@
 
 </html>
 
-<script src="/js/toast.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/home.script.js"></script>
-
-<script>
-    function toggleDropdown() {
-        document.getElementById("dropdown").classList.toggle("hidden");
-    }
-
-    // Close the dropdown if the user clicks outside of it
-    window.onclick = function (event) {
-        if (!event.target.matches('.inline-flex')) {
-            var dropdowns = document.getElementsByClassName("absolute");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (!openDropdown.classList.contains('hidden')) {
-                    openDropdown.classList.add('hidden');
-                }
-            }
-        }
-    }
-
-    function trial() {
-        Swal.fire({
-            title: "The Internet?",
-            text: "That thing is still around?",
-            type: "question"
-        });
-    }
-</script>
-
-
 <!-- view model -->
 <div id="medicineViewModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -150,10 +118,12 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="medicationName">Medication Name</label>
                     <input type="text" name="medicationName" id="medicationName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <span class="hidden text-red-500" id="medicationName_error"></span>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
                     <textarea id="description" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    <span class="hidden text-red-500" id="description_error"></span>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="type">Reminder Type</label>
@@ -162,15 +132,18 @@
                         <option value="oneTime">One Time</option>
                         <option value="recurring">Recurring</option>
                     </select>
+                    <span class="hidden text-red-500" id="type_error"></span>
                 </div>
                 <div id="oneTimeFields" class="hidden">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeDate">Date</label>
                         <input type="date" name="oneTimeDate" id="oneTimeDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="oneTimeDate_error"></span>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="oneTimeTime">Time</label>
                         <input type="time" name="oneTimeTime" id="oneTimeTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <span class="hidden text-red-500" id="oneTimeTime_error"></span>
                     </div>
                 </div>
                 <div id="recurringFields" class="hidden">
@@ -181,33 +154,40 @@
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
                         </select>
+                        <span class="hidden text-red-500" id="recurringType_error"></span>
                     </div>
                     <div id="dailyFields" class="hidden">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyStartDate">Start Date</label>
                             <input type="date" name="dailyStartDate" id="dailyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="dailyStartDate_error"></span>
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyEndDate">End Date</label>
                             <input type="date" name="dailyEndDate" id="dailyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="dailyEndDate_error"></span>
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="dailyTime">Time</label>
                             <input type="time" name="dailyTime" id="dailyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="dailyTime_error"></span>
                         </div>
                     </div>
                     <div id="weeklyFields" class="hidden">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyStartDate">Start Date</label>
                             <input type="date" name="weeklyStartDate" id="weeklyStartDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="weeklyStartDate_error"></span>
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyEndDate">End Date</label>
                             <input type="date" name="weeklyEndDate" id="weeklyEndDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="weeklyEndDate_error"></span>
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="weeklyTime">Time</label>
                             <input type="time" name="weeklyTime" id="weeklyTime" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <span class="hidden text-red-500" id="weeklyTime_error"></span>
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="dayOfWeek">Day of the Week</label>
@@ -221,6 +201,7 @@
                                 <option value="friday">Friday</option>
                                 <option value="saturday">Saturday</option>
                             </select>
+                            <span class="hidden text-red-500" id="dayOfWeek_error"></span>
                         </div>
                     </div>
                 </div>
@@ -232,3 +213,36 @@
         </div>
     </div>
 </div>
+
+<script src="/js/toast.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/home.script.js"></script>
+
+<script>
+    function toggleDropdown() {
+        document.getElementById("dropdown").classList.toggle("hidden");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.inline-flex')) {
+            var dropdowns = document.getElementsByClassName("absolute");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (!openDropdown.classList.contains('hidden')) {
+                    openDropdown.classList.add('hidden');
+                }
+            }
+        }
+    }
+
+    function trial() {
+        Swal.fire({
+            title: "The Internet?",
+            text: "That thing is still around?",
+            type: "question"
+        });
+    }
+</script>
+
+
