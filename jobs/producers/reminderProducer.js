@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const reminderQueue = require('../queues/reminderQueue');
 const db = require('../../models/index');
+const { Op } = require('sequelize');
 let { User, Medication, Reminder } = db;
 
 // Schedule the cron job to run every minute
@@ -18,6 +19,11 @@ const checkAndSendReminders = async () => {
                   include: [User],
                 },
             ],
+            where: {
+                medication_id: {
+                    [Op.ne] : null
+                }
+            }
         });
     
         reminders.forEach(async (reminder) => {

@@ -256,7 +256,6 @@ function checkEndDate(event) {
 }
 
 document.getElementById('report-generation-link').addEventListener('click', async (event) => {
-    // make fetch request
     let aside_section = Array.from(document.getElementById('aside_section').children);
     aside_section.forEach((element) => {
         element.classList.remove('active');
@@ -269,12 +268,12 @@ document.getElementById('report-generation-link').addEventListener('click', asyn
         
         <div class="mb-4">
             <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date</label>
-            <input type="date" id="startDate" name="startDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="date" onchange="checkReportStartDate(event)" id="startDate" name="startDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         
         <div class="mb-4">
             <label for="endDate" class="block text-gray-700 font-medium mb-2">End Date</label>
-            <input type="date" id="endDate" name="endDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="date" onchange="checkReportEndDate(event)" id="endDate" name="endDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         
         <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -287,6 +286,40 @@ document.getElementById('report-generation-link').addEventListener('click', asyn
     document.getElementById('startDate').max = new Date().toISOString().split("T")[0];
     document.getElementById('endDate').max = new Date().toISOString().split("T")[0];
 });
+
+function checkReportStartDate(event) {
+    let startDate = event.target;
+
+    let today = new Date().toISOString().split('T')[0];
+
+    if (startDate.value > today) {
+        alert("you cannot select the date before today");
+        startDate.value = '';
+    }
+
+    let endDate = document.getElementById('endDate');
+
+    if (endDate.value) {
+        if (endDate.value < startDate.value) {
+            alert('start date can not be greater than end date');
+            startDate.value = '';
+        }
+    }
+}
+
+function checkReportEndDate(event) {
+    let endDate = event.target;
+    let startDate = document.getElementById('startDate');
+
+    if (!startDate.value) {
+        alert('please select start date first');
+        endDate.value = '';
+    }
+    if (startDate.value > endDate.value) {
+        alert('end date cannot be smaller than start date');
+        endDate.value = '';
+    }
+}
 
 async function submitHandler(event) {
     event.preventDefault();

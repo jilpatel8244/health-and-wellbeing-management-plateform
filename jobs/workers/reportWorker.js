@@ -53,5 +53,5 @@ const worker = new Worker('reportQueue', async (job) => {
 // });
 
 worker.on('failed', (job, err) => {
-    console.log(`report job ${job.id} has failed with error ${err.message}`);
+    console.log(`report worker : report job ${job.id} has failed with error ${err.message}`);
 })

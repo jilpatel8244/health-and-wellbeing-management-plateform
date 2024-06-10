@@ -16,6 +16,7 @@ const getLocalDate = (date) => {
 
 const worker = new Worker('reminderQueue', async (job) => {
     const reminder = job.data.reminder;
+
     const now = new Date();
     const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const currentDay = daysOfWeek[now.getDay()];
@@ -70,5 +71,5 @@ const worker = new Worker('reminderQueue', async (job) => {
 // });
 
 worker.on('failed', (job, err) => {
-    console.log(`reminder job ${job.id} has failed with error ${err.message}`);
+    console.log(`reminder worker : reminder job ${job.id} has failed with error ${err.message}`);
 })

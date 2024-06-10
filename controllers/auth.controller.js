@@ -9,6 +9,16 @@ const { generalResponse } = require('../helpers/response.helper');
 const { getUser } = require('../repositories/user.repository');
 const { calculateTimeDifference } = require('../helpers/calculateTimeDifference');
 let { User, UserSession } = db;
+const { Queue } = require("bullmq");
+const { Worker } = require('bullmq');
+const redisConnection = require('../config/redisConfig');
+
+const otpQueue = new Queue('otpQueue', { connection: redisConnection });
+
+new Worker('otpQueue', async (job) => {
+    let { email, subject, text } = job.data;
+    mailService(email, subject, text);
+}, { connection: redisConnection });
 
 exports.createUser = async (req, res) => {
     try {
@@ -104,7 +114,7 @@ exports.createUser = async (req, res) => {
         // send mail to user
         let subject = 'OTP FOR ACTIVATE YOUR ACCOUNT';
         let text = `this is your otp : ${otp}`;
-        mailService(email, subject, text);
+        await otpQueue.add('otpQueue', { email: email, subject: subject, text: text });
 
         // send response
         return res.status(200).json({
@@ -399,7 +409,7 @@ exports.verifyEmail = async (req, res) => {
         // send it in mail
         let subject = 'OTP FOR VERIFY YOUR EMAIL';
         let text = `this is your otp : ${otp}`;
-        mailService(email, subject, text);
+        await otpQueue.add('otpQueue', { email: email, subject: subject, text: text });
 
         // send response
         return res.status(200).json({
